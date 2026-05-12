@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSV — Board Proposal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:    #16120e;
+    --paper:  #f5f0e8;
+    --cream:  #ede6d8;
+    --rose:   #b85c42;
+    --rose-l: #d4856e;
+    --rose-xl:#f0c4b4;
+    --gold:   #a07830;
+    --gold-l: #d4b870;
+    --muted:  #7a6e62;
+    --border: #cfc7bc;
+    --dark:   #1e1810;
+    --white:  #ffffff;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  @media print {
+    @page { size: A4; margin: 0; }
+    body { background: var(--paper); padding: 0; }
+    .page { width: 210mm; min-height: 297mm; padding: 13mm 15mm; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  body {
+    background: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+
+  .page {
+    background: var(--paper);
+    width: 100%;
+    min-height: 100vh;
+    padding: 52px 80px 44px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--rose) 0%, var(--rose-l) 65%, transparent 100%);
+  }
+
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 20px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 44px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 7px;
+  }
+
+  .titles {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .badge {
+    background: var(--rose);
+    color: var(--white);
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 2px;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 32px; }
+
+  .sec-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .sec-num {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--rose);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .sec-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .sec-rule {
+    flex: 1;
+    height: 0.5px;
+    background: var(--border);
+  }
+
+  /* ZONE 1 */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .why-card {
+    background: var(--dark);
+    border-radius: 3px;
+    padding: 20px 22px;
+    border-top: 2px solid var(--rose);
+  }
+
+  .why-card.c2 { border-top-color: var(--gold); }
+  .why-card.c3 { border-top-color: var(--rose-l); }
+
+  .why-head {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    margin-bottom: 12px;
+  }
+
+  .why-card.c2 .why-head { color: var(--gold-l); }
+  .why-card.c3 .why-head { color: var(--rose-xl); }
+
+  .blist { list-style: none; }
+
+  .blist li {
+    font-size: 11px;
+    color: #a09888;
+    line-height: 1.65;
+    padding-left: 13px;
+    position: relative;
+    margin-bottom: 3px;
+  }
+
+  .blist li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--rose);
+    font-size: 8px;
+    top: 3px;
+  }
+
+  .why-card.c2 .blist li::before { color: var(--gold); }
+  .why-card.c3 .blist li::before { color: var(--rose-l); }
+  .blist li b { color: #d4ccc4; font-weight: 500; }
+
+  /* ZONE 2 */
+  .init-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .init-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .init-head {
+    background: var(--ink);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .init-htitle {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .init-hnum {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--rose-l);
+    line-height: 1;
+  }
+
+  .init-body { padding: 15px 16px 13px; }
+
+  .ilist { list-style: none; margin-bottom: 12px; }
+
+  .ilist li {
+    font-size: 10.5px;
+    color: var(--ink);
+    line-height: 1.65;
+    padding-left: 12px;
+    position: relative;
+    margin-bottom: 2px;
+  }
+
+  .ilist li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--rose);
+    font-size: 15px;
+    line-height: 0.92;
+  }
+
+  .init-tag {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rose);
+    border-top: 0.5px solid var(--border);
+    padding-top: 9px;
+  }
+
+  /* ZONE 3 */
+  .track-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  .flagship {
+    background: var(--rose);
+    border-radius: 3px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flagship::after {
+    content: '$';
+    position: absolute;
+    right: -10px; bottom: -20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 110px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.07);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .fl-label {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rose-xl);
+    margin-bottom: 6px;
+  }
+
+  .fl-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 50px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 0.9;
+    margin-bottom: 4px;
+  }
+
+  .fl-unit {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--rose-xl);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .fl-name {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .flist { list-style: none; }
+  .flist li {
+    font-size: 10px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.6;
+    padding-left: 12px;
+    position: relative;
+    margin-bottom: 2px;
+  }
+  .flist li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--rose-xl);
+    font-size: 15px;
+    line-height: 0.92;
+  }
+
+  .track-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .titem {
+    background: var(--cream);
+    border: 0.5px solid var(--border);
+    border-radius: 3px;
+    padding: 14px 16px;
+    flex: 1;
+  }
+
+  .titem-label {
+    font-size: 7.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 3px;
+  }
+
+  .titem-title {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 7px;
+  }
+
+  .tlist { list-style: none; }
+  .tlist li {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding-left: 12px;
+    position: relative;
+    margin-bottom: 2px;
+  }
+  .tlist li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--rose);
+    font-size: 15px;
+    line-height: 0.92;
+  }
+
+  /* FOOTER */
+  .footer {
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-q {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .footer-r { text-align: right; }
+
+  .footer-conf {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rose);
+  }
+
+  .footer-date {
+    font-size: 8px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="content">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="name">Thanh Trung Truong</div>
+      <div class="titles">Former Deputy CEO, HSV &nbsp;·&nbsp; Co-founder, Idealab &nbsp;·&nbsp; CFO, Finan & Rabity</div>
+    </div>
+    <div class="badge">Board Membership Proposal &nbsp;·&nbsp; Confidential</div>
+  </div>
+
+  <!-- ZONE 1: WHY -->
+  <div class="section">
+    <div class="sec-header">
+      <span class="sec-num">01</span>
+      <span class="sec-title">Why</span>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-head">HSV Has All the Ingredients</div>
+        <ul class="blist">
+          <li>Recognized brands + 45-store network</li>
+          <li>Growing eCommerce channel</li>
+          <li><b>Years of customer data</b> — largely untapped</li>
+          <li>Raw material for profitability already exists</li>
+        </ul>
+      </div>
+      <div class="why-card c2">
+        <div class="why-head">Right Moment, Right Tools</div>
+        <ul class="blist">
+          <li>AI/BI systems now production-grade</li>
+          <li>Proven optimization frameworks across industries</li>
+          <li>Deep HSV institutional knowledge — <b>data, ops, culture</b></li>
+          <li>Problems partially solved before — <b>now fully solvable</b></li>
+        </ul>
+      </div>
+      <div class="why-card c3">
+        <div class="why-head">Personal Passion</div>
+        <ul class="blist">
+          <li>Enhance <b>business efficiency</b> for Vietnamese enterprises</li>
+          <li>Raise <b>labor productivity</b> through technology & AI</li>
+          <li>Build organizations where people work smarter</li>
+          <li>HSV is exactly the business this mission is built for</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZONE 2: INITIATIVES -->
+  <div class="section">
+    <div class="sec-header">
+      <span class="sec-num">02</span>
+      <span class="sec-title">Three Priority Initiatives</span>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="init-grid">
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-htitle">Customer Centricity</div>
+          <div class="init-hnum">01</div>
+        </div>
+        <div class="init-body">
+          <ul class="ilist">
+            <li>Segment customers by value, frequency & LTV</li>
+            <li>Target promotions to high-margin segments</li>
+            <li>Reduce blanket marketing spend</li>
+            <li>Built at HSV before — rebuilt with AI/BI</li>
+          </ul>
+          <div class="init-tag">Analytics · CRM · Conversion</div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-htitle">Assortment Planning</div>
+          <div class="init-hnum">02</div>
+        </div>
+        <div class="init-body">
+          <ul class="ilist">
+            <li>Data-driven buying & allocation by store/channel</li>
+            <li>Sell-through analysis → reduce dead stock</li>
+            <li>Break the markdown & clearance cycle</li>
+            <li>Protect and recover gross margin</li>
+          </ul>
+          <div class="init-tag">Inventory · Demand · Margin</div>
+        </div>
+      </div>
+      <div class="init-card">
+        <div class="init-head">
+          <div class="init-htitle">AI Transformation</div>
+          <div class="init-hnum">03</div>
+        </div>
+        <div class="init-body">
+          <ul class="ilist">
+            <li>Embed AI into core business workflows</li>
+            <li>Faster analysis, better decision inputs</li>
+            <li>Reduce manual workload across teams</li>
+            <li>Elevate staff capability — not replace</li>
+          </ul>
+          <div class="init-tag">AI · Automation · Upskilling</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZONE 3: TRACK RECORD -->
+  <div class="section">
+    <div class="sec-header">
+      <span class="sec-num">03</span>
+      <span class="sec-title">Recent Track Record — AI / BI</span>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="track-grid">
+
+      <div class="flagship">
+        <div>
+          <div class="fl-label">Flagship Result</div>
+          <div class="fl-num">+$1M<span style="font-size:24px">+</span></div>
+          <div class="fl-unit">Annual Profit Improvement</div>
+        </div>
+        <div>
+          <div class="fl-name">VFX Auto — VinFast Network</div>
+          <ul class="flist">
+            <li>5-showroom full BI diagnostic</li>
+            <li>P&L by showroom · CVP model</li>
+            <li>Gross margin: –2% → +2%</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="track-col">
+        <div class="titem">
+          <div class="titem-label">BI / AI Implementation</div>
+          <div class="titem-title">Nutrinest (FMCG)</div>
+          <ul class="tlist">
+            <li>Anchor Idealab client · 25K USD</li>
+            <li>Sales analytics & performance BI</li>
+            <li>Phase 2 in progress</li>
+          </ul>
+        </div>
+        <div class="titem">
+          <div class="titem-label">Treasury Automation</div>
+          <div class="titem-title">Thanh Yến Group</div>
+          <ul class="tlist">
+            <li>15 subsidiaries on Lark platform</li>
+            <li>Real-time cash visibility</li>
+            <li>Automated approval workflows</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="track-col">
+        <div class="titem">
+          <div class="titem-label">BI · Profit Optimization</div>
+          <div class="titem-title">F&B Chain (Multi-outlet)</div>
+          <ul class="tlist">
+            <li>Full BI system across outlets</li>
+            <li>Menu & cost structure diagnostic</li>
+            <li>Measurable gross margin improvement</li>
+          </ul>
+        </div>
+        <div class="titem">
+          <div class="titem-label">SaaS · Growth Strategy</div>
+          <div class="titem-title">Sobanhang (POS Platform)</div>
+          <ul class="tlist">
+            <li>Customer retention framework</li>
+            <li>Revenue model redesign</li>
+            <li>Sustainable ARR growth trajectory</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-q">"The diagnosis is clear. The tools are ready. The track record speaks."</div>
+    <div class="footer-r">
+      <div class="footer-conf">Confidential</div>
+      <div class="footer-date">May 2026 &nbsp;·&nbsp; Board of Directors, HSV</div>
+    </div>
+  </div>
+
+</div>
+</div>
+</body>
+</html>
