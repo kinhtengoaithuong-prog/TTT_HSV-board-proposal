@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rabity · Ráp một sản phẩm như ráp xe Lego</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Serif+Display:ital,wght@0,400;1,400&family=Outfit:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext,vietnamese" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0D1B2A;--navy:#1A2E4A;--steel:#2C4A6E;
+    --platinum:#E6E9EF;--muted:#8FA3BC;
+    --gold:#C9A24B;--gold-soft:#E3C77E;
+    --red:#D9685F;--green:#5BBE8A;--line:rgba(201,162,75,.26);
+    --serif:'Noto Serif Display','DM Serif Display',Georgia,'Times New Roman',serif;
+    --mono:'DM Mono','Outfit',ui-monospace,'Courier New',monospace;
+    --sans:'Outfit',system-ui,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--ink);color:var(--platinum);overflow:hidden}
+  .deck{height:100vh;width:100vw;position:relative}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:6vh 8vw 11vh;
+    background:
+      radial-gradient(120% 90% at 86% 8%, rgba(44,74,110,.5) 0%, transparent 55%),
+      radial-gradient(90% 80% at 8% 95%, rgba(26,46,74,.55) 0%, transparent 60%),
+      linear-gradient(160deg,var(--ink) 0%, #0a1622 100%);
+    animation:fade .45s ease;}
+  .slide.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.slide{animation:none}}
+
+  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:1.1rem;display:flex;align-items:center;gap:.85rem}
+  .eyebrow::before{content:"";width:30px;height:1px;background:var(--gold);opacity:.7}
+  .eyebrow.bad{color:var(--red)} .eyebrow.bad::before{background:var(--red)}
+
+  h1{font-family:var(--serif);font-weight:400;line-height:1.04;
+     font-size:clamp(2.3rem,5.6vw,4.8rem);letter-spacing:-.01em;color:#fff}
+  h1 em{font-style:italic;color:var(--gold-soft)}
+  h2{font-family:var(--serif);font-weight:400;line-height:1.1;
+     font-size:clamp(1.7rem,3.8vw,3rem);color:#fff;margin-bottom:.3rem}
+  h2 em{font-style:italic;color:var(--gold-soft)}
+  .lede{font-size:clamp(1rem,1.55vw,1.25rem);color:var(--muted);max-width:64ch;
+        line-height:1.55;font-weight:300;margin-top:1.3rem}
+  .lede strong{color:var(--platinum);font-weight:500}
+  .lede em{font-style:italic;color:var(--gold-soft)}
+
+  .pull{font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2.2rem);line-height:1.25;
+        color:#fff;border-left:2px solid var(--gold);padding-left:1.4rem;max-width:30ch}
+  .pull span{color:var(--gold-soft)}
+
+  /* ===== interactive pair stage ===== */
+  .stage{display:grid;grid-template-columns:minmax(260px,1fr) 1.1fr;gap:2.6rem;align-items:center;
+         width:100%;max-width:90ch;margin-top:.8rem;min-height:46vh}
+  .legobox{display:flex;align-items:center;justify-content:center;
+           border:1px solid var(--line);border-radius:6px;background:rgba(26,46,74,.28);padding:1rem;min-height:42vh}
+  .legobox svg{width:100%;max-width:340px;height:auto}
+  .vcard .vtag{font-family:var(--mono);font-size:1.5rem;color:var(--gold-soft);letter-spacing:.02em}
+  .vcard .stagelabel{font-family:var(--mono);font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;
+                     color:var(--muted);margin-bottom:.5rem}
+  .vcard h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.4rem,2.4vw,2rem);color:#fff;
+            margin:.3rem 0 .9rem;line-height:1.15}
+  .vcard .gain{font-size:1.05rem;color:var(--platinum);font-weight:300;line-height:1.5}
+  .vcard .gain b{color:var(--green);font-weight:600}
+  .vcard .mean{font-size:.98rem;color:var(--muted);font-weight:300;line-height:1.5;margin-top:.7rem;
+               border-left:2px solid var(--line);padding-left:.9rem}
+  .vcard.peak h3{color:var(--gold-soft)}
+  .demolink{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.2rem;
+    font-family:var(--mono);font-size:.86rem;letter-spacing:.03em;text-decoration:none;
+    color:var(--gold-soft);border:1px solid var(--line);border-radius:3px;
+    padding:.5rem 1rem;transition:.18s}
+  .demolink:hover{border-color:var(--gold);background:rgba(201,162,75,.08)}
+  .demolink.off{color:var(--muted);border-style:dashed;cursor:default;opacity:.65}
+
+  .dots{display:flex;gap:.5rem;margin-top:1.6rem;flex-wrap:wrap;align-items:center}
+  .dot{width:11px;height:11px;border-radius:50%;background:rgba(143,163,188,.22);transition:.25s;cursor:pointer}
+  .dot.on{background:var(--gold)}
+  .dot.peak.on{background:var(--gold-soft);box-shadow:0 0 0 3px rgba(227,199,126,.18)}
+  .revealbtn{margin-top:1.4rem;display:inline-flex;align-items:center;gap:.6rem;
+    font-family:var(--mono);font-size:.92rem;letter-spacing:.04em;background:var(--gold);
+    color:#0D1B2A;border:none;padding:.7rem 1.3rem;border-radius:3px;cursor:pointer;font-weight:500;transition:.18s}
+  .revealbtn:hover{background:var(--gold-soft)}
+  .revealbtn.replay{background:transparent;color:var(--gold-soft);border:1px solid var(--line)}
+  .stagecount{font-family:var(--mono);font-size:.82rem;color:var(--muted);margin-left:1rem}
+
+  .takeaways{display:flex;flex-direction:column;gap:1.05rem;margin-top:1.7rem;max-width:68ch}
+  .ta{display:flex;gap:1.3rem;align-items:baseline}
+  .ta .n{font-family:var(--mono);color:var(--gold);font-size:.92rem;min-width:2.6rem}
+  .ta .x{font-size:1.1rem;line-height:1.45;font-weight:300}
+  .ta .x b{color:#fff;font-weight:600}
+
+  .quote{font-family:var(--mono);font-size:.95rem;line-height:1.6;color:var(--platinum);
+    background:rgba(217,104,95,.08);border-left:2px solid var(--red);
+    padding:1.1rem 1.4rem;border-radius:2px;max-width:64ch;margin-top:1.5rem}
+  .quote.ok{background:rgba(91,190,138,.07);border-left-color:var(--green)}
+  .quote .who{display:block;font-family:var(--sans);font-size:.78rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-top:.7rem}
+
+  .steps{display:flex;flex-direction:column;gap:1.05rem;margin-top:1.7rem;max-width:62ch}
+  .step{display:flex;gap:1.3rem;align-items:baseline}
+  .step .num{font-family:var(--mono);color:var(--gold);font-size:.95rem;min-width:2.4rem}
+  .step .txt{font-size:1.1rem;line-height:1.45;font-weight:300}
+  .step .txt b{color:#fff;font-weight:600}
+
+  .nav{position:fixed;bottom:0;left:0;right:0;height:6vh;min-height:52px;display:flex;
+    align-items:center;justify-content:space-between;padding:0 8vw;background:rgba(8,16,28,.8);
+    backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:30}
+  .nav .meta{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;color:var(--muted)}
+  .nav .meta b{color:var(--gold)}
+  .controls{display:flex;gap:.7rem}
+  button.ctrl{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;background:transparent;
+    color:var(--platinum);border:1px solid var(--line);padding:.5rem 1.05rem;border-radius:2px;
+    cursor:pointer;transition:.18s}
+  button.ctrl:hover{border-color:var(--gold);color:var(--gold-soft)}
+  button.ctrl:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  button.ctrl:disabled{opacity:.3;cursor:default}
+  .progress{position:fixed;top:0;left:0;height:2px;background:var(--gold);z-index:40;transition:width .3s}
+
+  @media (max-width:860px){
+    .slide{padding:5vh 6.5vw 13vh}
+    .stage{grid-template-columns:1fr;gap:1.2rem;min-height:auto}
+    .legobox{min-height:32vh}.legobox svg{max-width:280px}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="bar"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 — title (Lego framing) -->
+  <section class="slide active">
+    <div class="eyebrow">Rabity · Internal Session</div>
+    <h1>Ráp một sản phẩm<br>như ráp một <em>chiếc xe Lego.</em></h1>
+    <p class="lede">Không ai ráp xe Lego hoàn chỉnh trong một lần. Bắt đầu từ một cục gạch xấu xí gắn tạm bốn bánh — rồi thêm dần, sửa dần, tới khi nó chạy bằng pin và điều khiển từ xa. Build sản phẩm bằng AI <strong>y hệt như vậy.</strong></p>
+  </section>
+
+  <!-- 2 — the ugly brick that rolls -->
+  <section class="slide">
+    <div class="eyebrow">Ẩn dụ mở màn</div>
+    <h2>Cục gạch xấu — nhưng <em>đẩy là lăn.</em></h2>
+    <p class="lede">Chiếc xe Lego đầu tiên chỉ là: một thân hình viên gạch, hai thanh sắt xuyên qua lỗ, bốn bánh. Nhìn chẳng ra xe. Nhưng <strong>nó lăn được.</strong></p>
+    <p class="lede" style="margin-top:.9rem">Đó là toàn bộ tinh thần hôm nay: <em>bản đầu xấu mà chạy được</em> còn hơn bản hoàn hảo trong tưởng tượng. Giờ mình cho xem cái tool thật của Finan đã "ráp" qua 9 giai đoạn đúng kiểu Lego như thế nào.</p>
+  </section>
+
+  <!-- 3 — the pain -->
+  <section class="slide">
+    <div class="eyebrow">Điểm xuất phát · Nỗi đau</div>
+    <h2>Cái "xe" cần ráp ở đây là gì?</h2>
+    <div class="pull">"Tuyển thêm, tăng lương, có người nghỉ — <span>quỹ lương tháng tới đi về đâu?</span>"</div>
+    <p class="lede">125 nhân sự, mỗi kỳ ngân sách lại dựng lại file Excel từ đầu, sửa một ô sai cả bảng. <strong>Mình không bắt đầu vì muốn build tool — mình bắt đầu vì việc này hành mình mỗi tháng.</strong> Đó luôn là cục gạch đầu tiên: một nỗi đau thật.</p>
+    <p class="lede" style="margin-top:.8rem">Ở Rabity, bài toán tương tự cũng rất gần: <strong>tự động hoá quy trình tính lương, phân bổ chi phí và tạo bút toán kế toán.</strong> Vì vậy case này không phải chuyện xa lạ — nó là một phiên bản khác của chính bài toán vận hành nội bộ.</p>
+  </section>
+
+  <!-- 4 — INTERACTIVE 9 PAIRS -->
+  <section class="slide" id="legoSlide">
+    <div class="eyebrow">Bằng chứng · 9 giai đoạn ↔ 9 bản thật</div>
+    <h2 style="margin-bottom:.2rem">Mỗi bản = ráp thêm <em>đúng một bộ phận.</em></h2>
+    <div class="stage">
+      <div class="legobox"><div id="legoArt"></div></div>
+      <div class="vcard" id="vcard"></div>
+    </div>
+    <div>
+      <div class="dots" id="dots"></div>
+      <button class="revealbtn" id="revealBtn">Ráp giai đoạn tiếp →</button>
+      <span class="stagecount" id="stageCount"></span>
+    </div>
+  </section>
+
+  <!-- 5 — read the shape -->
+  <section class="slide">
+    <div class="eyebrow">Đọc lại 9 giai đoạn</div>
+    <h2>Để ý hai chỗ <em>đổi bản chất</em>, không chỉ thêm thắt.</h2>
+    <p class="lede"><strong>Lần một — từ "báo cáo" thành "công cụ".</strong> Ba bản đầu (cục gạch, thêm mui, to ra) chỉ là report tĩnh để nhìn cho hiểu. Tới v1 — "trục xe rời" — nó mới biết thêm/bớt người, tự tính lại. Đó là lúc nó <em>thành một chiếc xe chạy được.</em></p>
+    <p class="lede" style="margin-top:.8rem"><strong>Lần hai — v25, "điều khiển từ xa".</strong> Tới đó mình mới nhận ra cái mình cần không phải "tính chi phí", mà là <em>ra được bút toán để hạch toán lên sổ</em> — một bài toán khác hẳn, chỉ lộ ra sau khi đã dùng tool đủ lâu.</p>
+    <div class="quote ok">Không ai vẽ được bản thiết kế chiếc xe hoàn chỉnh từ đầu. Bạn ráp → bạn chạy thử → bạn mới biết bộ phận tiếp theo cần gì. Đó là lý do phải có 9 giai đoạn, không phải vì làm ẩu.
+      <span class="who">Đây là điều một người học nên thấy rõ nhất</span>
+    </div>
+  </section>
+
+  <!-- 6 — the dirt -->
+  <section class="slide">
+    <div class="eyebrow bad">Phần không ai khoe</div>
+    <h2>Giữa các giai đoạn là <em>va vấp.</em></h2>
+    <p class="lede" style="max-width:64ch">Hình thì gọn, nhưng tay thì bẩn:</p>
+    <div class="takeaways" style="margin-top:1.2rem">
+      <div class="ta"><div class="n">→</div><div class="x">Data thật <b>bẩn hơn tưởng</b>: file ghi nhầm chức danh, người đã nghỉ vẫn còn, khoản điều chỉnh phải mang sang tháng sau — ngồi sửa tay từng chỗ.</div></div>
+      <div class="ta"><div class="n">→</div><div class="x">Có bản <b>ra số rất đẹp nhưng sai hết</b> — một ô trạng thái nhét nhầm giá trị làm mọi phép tính lệch, mà bảng nhìn vẫn mượt.</div></div>
+      <div class="ta"><div class="n">→</div><div class="x">Có lần định ráp <b>"xịn" hơn rồi phải tháo ra</b>: tách cấu hình ra file riêng nghe rất hay, lắp xong mới biết mở file là chết — phải quay về cách xấu hơn nhưng chạy được.</div></div>
+    </div>
+    <p class="lede" style="margin-top:1.3rem"><strong>Mỗi lần tháo-lắp lại là một bản mới.</strong> Lặp lại không phải là dở — nó chính là cách chiếc xe lớn lên.</p>
+  </section>
+
+  <!-- 7 — how I work with AI -->
+  <section class="slide">
+    <div class="eyebrow">Sự thật về cách làm</div>
+    <h2>Mình không gõ code. Mình <em>cãi nhau</em> với AI.</h2>
+    <p class="lede" style="max-width:64ch">Quy trình thật giữa mỗi giai đoạn không sạch sẽ. Nó lặp đi lặp lại, nhiều lần bực:</p>
+    <div class="quote ok" style="margin-top:1.1rem">"Tả cái mình muốn" → AI ráp ra bản lệch → "Không, ý tao là..." → sửa → "Vẫn sai chỗ này" → sửa tiếp → ... → đúng → chạy thử → tháng sau lại thấy thiếu → giai đoạn mới.
+      <span class="who">9 giai đoạn là 9 vòng tháo-lắp như vậy</span>
+    </div>
+    <p class="lede" style="margin-top:1.3rem">AI không đọc được suy nghĩ. <strong>Nó giỏi đúng bằng độ rõ ràng của bạn.</strong> Tả mơ hồ → ráp ra mơ hồ. Đưa ví dụ thật, chỉ thẳng chỗ sai → mới ra được thứ dùng được. Cái khó nằm ở <em>biết rõ mình muốn ráp cái gì</em>, không ở kỹ thuật.</p>
+  </section>
+
+  <!-- 8 — takeaways -->
+  <section class="slide">
+    <div class="eyebrow">Rút ra từ 9 giai đoạn</div>
+    <h2>Năm điều một người học nên mang về.</h2>
+    <div class="takeaways">
+      <div class="ta"><div class="n">01</div><div class="x"><b>Bắt đầu từ nỗi đau thật</b> của mình, không phải từ "AI làm được gì".</div></div>
+      <div class="ta"><div class="n">02</div><div class="x"><b>Ráp cục gạch xấu trước.</b> Xe lăn được hôm nay hơn xe hoàn hảo trong đầu.</div></div>
+      <div class="ta"><div class="n">03</div><div class="x"><b>Mỗi giai đoạn thêm đúng một bộ phận</b> đang thiếu — đừng ôm tất cả từ đầu.</div></div>
+      <div class="ta"><div class="n">04</div><div class="x"><b>Tự nghi ngờ kết quả.</b> Xe nhìn đẹp không có nghĩa là nó chạy đúng.</div></div>
+      <div class="ta"><div class="n">05</div><div class="x"><b>Tháo-lắp lại là trưởng thành, không phải dở.</b> Sản phẩm lớn lên trong vòng lặp.</div></div>
+    </div>
+  </section>
+
+  <!-- 9 — your turn -->
+  <section class="slide">
+    <div class="eyebrow">Phần của bạn</div>
+    <h2>Tuần này — ráp một "cục gạch" của bạn.</h2>
+    <div class="steps">
+      <div class="step"><div class="num">01</div><div class="txt">Chọn <b>một việc</b> bạn làm lặp lại, tốn thời gian, hay sai.</div></div>
+      <div class="step"><div class="num">02</div><div class="txt">Tả cho AI <b>như tả cho người mới</b> — kèm một ví dụ thật của bạn.</div></div>
+      <div class="step"><div class="num">03</div><div class="txt">Bản đầu chắc chắn lệch. <b>Chỉ thẳng chỗ sai, bảo nó ráp lại.</b> Lặp lại.</div></div>
+      <div class="step"><div class="num">04</div><div class="txt">Đừng đợi nó chạy bằng pin mới dùng. <b>Đẩy cục gạch trước, rồi để nó lớn dần.</b></div></div>
+    </div>
+  </section>
+
+  <!-- 10 — close -->
+  <section class="slide">
+    <div class="eyebrow">Khép lại</div>
+    <h1>Đừng sợ<br><em>cục gạch xấu xí.</em></h1>
+    <p class="lede">Cái tool mình khoe hôm nay từng là một tờ báo cáo tĩnh, không nhập được gì. Nó tới được "xe chạy pin điều khiển từ xa" chỉ vì <strong>mình không bỏ nó ở cục gạch đầu tiên.</strong> Việc nào của bạn đáng có một cục gạch — ngay tuần này?</p>
+  </section>
+
+</div>
+
+<nav class="nav">
+  <div class="meta">RABITY · BUILD LIKE LEGO · <b id="cur">01</b> / <span id="tot">10</span></div>
+  <div class="controls">
+    <button class="ctrl" id="prev">← Trước</button>
+    <button class="ctrl" id="next">Tiếp →</button>
+  </div>
+</nav>
+
+<script>
+/* ============================================================
+   ►► DÁN LINK DEMO THẬT VÀO ĐÂY ◄◄
+   Sau khi up 9 file lên web / Lark / Google Drive, dán URL công khai
+   của từng bản vào đây. Để trống ('') thì nút "Mở demo" sẽ mờ đi.
+   (Với Google Drive: dùng link share "Anyone with the link",
+    đổi /view thành /preview để mở xem trực tiếp.)
+   ============================================================ */
+const DEMO_FOLDER='https://drive.google.com/drive/folders/1mw4gkO0rCSXfi_OjiebYYV0lpdRVPz4V?usp=drive_link';
+const DEMO_FILE_NAMES={
+ 'Bản 0a':'finan-staffcost-mapping-t5-coa.html',
+ 'Bản 0b':'finan_payroll_costcode_hc_forecast_report.html',
+ 'Bản 0c':'Finan_Staff_Cost_Planning_Simulator_T6_v03.html',
+ 'v1' :'finan-staffcost-simulator_1.html',
+ 'v7' :'finan-staffcost-simulator_7.html',
+ 'v15':'finan-staffcost-simulator_15.html',
+ 'v17':'finan-staffcost-simulator_17.html',
+ 'v19':'finan-staffcost-simulator_19.html',
+ 'v25':'Finan-staffcost-simulator_v25.html',
+};
+const LINKS={
+ 'Bản 0a':'https://drive.google.com/file/d/1D0BHGxCPGWi0-KOp_AYPTVzZUcmCEVLN/preview',
+ 'Bản 0b':'https://drive.google.com/file/d/1XE72bf1lrNF8Jt40L_9-QFEj6Re7C2ZV/preview',
+ 'Bản 0c':'https://drive.google.com/file/d/1MTytweIn6MIXm0HyP2yrcJov5fu5aCcM/preview',
+ 'v1':'https://drive.google.com/file/d/1LVUDGQwT5Q9iFSSDEYvlIMnye5l9t_AO/preview',
+ 'v7':'https://drive.google.com/file/d/1JR34sdCkBsfrbuWCDbtknhOyOak0fOTR/preview',
+ 'v15':'https://drive.google.com/file/d/1xpzXIGEQVflgSkRFL4HdOILQTkmeBTLo/preview',
+ 'v17':'https://drive.google.com/file/d/1eFNR1XmWA1VKYUy8XcM6Ir55xxOC-Bxc/preview',
+ 'v19':'https://drive.google.com/file/d/11Zju4VvUkIhvA5tzMqfNRikrOI2wGHZX/preview',
+ 'v25':'https://drive.google.com/file/d/1ofzGFFol744fTwQ-9I0-GhYvv1fC6c8s/preview',
+};
+
+/* ---------- Lego SVG builder (cumulative parts) ---------- */
+const C={body:'#C0392B',roof:'#A93226',tire:'#1F2933',rim:'#3A4757',hub:'#7A8AA0',
+  axle:'#6F8198',stud:'#E8B84B',dark:'#34404D',steel:'#9FB0C2',gold:'#E8B84B',green:'#5BBE8A'};
+function wheels(big){const r=big?17:15;const y1=96,y2=124,x1=34,x2=196;
+  let s='';[[x1,y1],[x2,y1],[x1,y2],[x2,y2]].forEach(([x,y])=>{
+    s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${C.tire}" stroke="${C.rim}" stroke-width="3.5"/><circle cx="${x}" cy="${y}" r="${big?6:5}" fill="${C.hub}"/>`;});
+  return s;}
+function axles(){return `<rect x="22" y="93" width="186" height="5" rx="2.5" fill="${C.axle}"/><rect x="22" y="121" width="186" height="5" rx="2.5" fill="${C.axle}"/>`;}
+function studs(xs,y){return xs.map(x=>`<circle cx="${x}" cy="${y}" r="6" fill="${C.stud}"/>`).join('');}
+/* each stage returns full inner SVG markup */
+function lego(stage){
+  let p='';
+  const big = stage>=3;
+  const bodyX = 46, bodyW = big?148:120, bodyY=70, bodyH= stage>=3?40:34;
+  /* stage 4+ : separate axle modules instead of single long axles */
+  if(stage>=4){
+    p += `<rect x="22" y="116" width="52" height="15" rx="4" fill="${C.dark}"/>`;
+    p += `<rect x="156" y="116" width="52" height="15" rx="4" fill="${C.dark}"/>`;
+    p += `<rect x="74" y="120" width="82" height="5" rx="2.5" fill="${C.axle}"/>`;
+    p += axles().replace(/<rect[^>]*y="121"[^>]*\/>/,''); /* keep top axle only */
+    p = `<rect x="22" y="93" width="186" height="5" rx="2.5" fill="${C.axle}"/>` + 
+        `<rect x="22" y="116" width="52" height="15" rx="4" fill="${C.dark}"/>`+
+        `<rect x="156" y="116" width="52" height="15" rx="4" fill="${C.dark}"/>`+
+        `<rect x="74" y="120" width="82" height="5" rx="2.5" fill="${C.axle}"/>`;
+  } else {
+    p = axles();
+  }
+  /* body */
+  if(stage>=5){
+    /* hollow cabin: C-shape body */
+    const x=bodyX,w=bodyW,y=bodyY,h=bodyH;
+    p += `<path d="M${x} ${y} h${w} a5 5 0 0 1 5 5 v10 h-30 v${h-12} h-${w-50} v-${h-12} h-30 v-10 a5 5 0 0 1 5 -5 z" fill="${C.body}"/>`;
+    p += `<rect x="${x+30}" y="${y+5}" width="${w-60}" height="${h-7}" fill="#2C3A47"/>`;
+  } else {
+    p += `<rect x="${bodyX}" y="${bodyY}" width="${bodyW}" height="${bodyH}" rx="5" fill="${C.body}"/>`;
+  }
+  /* studs on top (stage1 only, before roof) */
+  if(stage===1){ p += studs([70,100,130,160],bodyY); }
+  /* roof from stage 2 — always solid so it never vanishes */
+  if(stage>=2){
+    const rx1=bodyX+20, rx2=bodyX+bodyW-20, ry=bodyY;
+    p += `<path d="M${rx1} ${ry} L${rx1+18} ${ry-22} L${rx2-18} ${ry-22} L${rx2} ${ry} Z" fill="${C.roof}"/>`;
+    if(stage<5) p += studs([bodyX+18, bodyX+bodyW-18], bodyY);
+  }
+  /* wings from stage 6 */
+  if(stage>=6){
+    p += `<rect x="14" y="58" width="10" height="18" rx="2" fill="${C.dark}"/>`;
+    p += `<rect x="6" y="52" width="40" height="7" rx="3" fill="${C.gold}"/>`; /* rear spoiler */
+    p += `<rect x="${bodyX+bodyW-2}" y="84" width="34" height="6" rx="3" fill="${C.gold}"/>`; /* front splitter */
+  }
+  /* wind-up coil + gear from stage 7 */
+  if(stage>=7){
+    const cx=88,cy=58;
+    p += `<circle cx="${cx}" cy="${cy}" r="15" fill="none" stroke="${C.gold}" stroke-width="3"/>`;
+    p += `<circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="${C.gold}" stroke-width="2.5"/>`;
+    p += `<circle cx="${cx}" cy="${cy}" r="4" fill="none" stroke="${C.gold}" stroke-width="2"/>`;
+    /* gear */
+    const gx=150,gy=78;
+    p += `<g fill="${C.steel}"><circle cx="${gx}" cy="${gy}" r="12"/><circle cx="${gx}" cy="${gy}" r="4" fill="${C.tire}"/>`;
+    const teeth=[[0,-15],[0,15],[-15,0],[15,0],[-10,-10],[10,10],[-10,10],[10,-10]];
+    teeth.forEach(([dx,dy])=>{p+=`<line x1="${gx+dx*0.73}" y1="${gy+dy*0.73}" x2="${gx+dx}" y2="${gy+dy}" stroke="${C.steel}" stroke-width="4"/>`;});
+    p += `</g>`;
+  }
+  /* battery box + motor from stage 8 */
+  if(stage>=8){
+    p += `<rect x="108" y="50" width="40" height="22" rx="3" fill="#2C3A47" stroke="${C.green}" stroke-width="2"/>`;
+    p += `<rect x="114" y="55" width="12" height="12" rx="1" fill="${C.green}"/><rect x="130" y="55" width="12" height="12" rx="1" fill="${C.green}"/>`;
+  }
+  /* remote control from stage 9 */
+  if(stage>=9){
+    /* antenna on car */
+    p += `<line x1="170" y1="68" x2="184" y2="40" stroke="${C.steel}" stroke-width="2.5"/><circle cx="184" cy="38" r="4" fill="${C.gold}"/>`;
+    /* remote controller bottom-left */
+    p += `<rect x="14" y="118" width="34" height="26" rx="4" fill="${C.dark}" stroke="${C.steel}" stroke-width="1.5"/>`;
+    p += `<circle cx="23" cy="127" r="4" fill="${C.green}"/><circle cx="39" cy="127" r="4" fill="${C.gold}"/>`;
+    p += `<rect x="20" y="135" width="22" height="4" rx="2" fill="${C.steel}"/>`;
+    /* signal waves */
+    p += `<path d="M52 124 q8 6 0 14" fill="none" stroke="${C.gold}" stroke-width="1.5" opacity=".7"/>`;
+    p += `<path d="M58 120 q14 11 0 22" fill="none" stroke="${C.gold}" stroke-width="1.5" opacity=".4"/>`;
+  }
+  /* wheels last (on top) */
+  p += wheels(big);
+  return `<svg viewBox="0 0 230 158" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Xe Lego giai đoạn ${stage}">${p}</svg>`;
+}
+
+/* ---------- pair data ---------- */
+const PAIRS=[
+ {v:'Bản 0a',t:'Báo cáo map chi phí (tĩnh)',gain:'Map chi phí lương vào đúng dòng tài khoản',mean:'Chưa nhập, chưa tính — chỉ để hiểu cấu trúc. Chưa phải sản phẩm.'},
+ {v:'Bản 0b',t:'Report forecast nhập tay',gain:'Thêm vài ô cho BU lead nhập input',mean:'Gốc rễ nhu cầu planning: nhập input → đẩy tổng vào P&L.'},
+ {v:'Bản 0c',t:'"Planning Simulator" phôi thai',gain:'Có Future Hires + ma trận P&L × BU',mean:'Bắt đầu gọi là "Simulator", nhưng chưa thêm người động.'},
+ {v:'v1',t:'Thành Simulator thật',gain:'Thêm / bớt người động, bật-tắt người nghỉ',mean:'★ Đổi bản chất: từ "báo cáo" thành "công cụ" chạy được.'},
+ {v:'v7',t:'Có bộ nhớ + tổng hợp',gain:'Tab Summary · Cross table · tự lưu',mean:'Mở lại không mất, nhìn được bức tranh tổng.'},
+ {v:'v15',t:'Gửi đi dùng được',gain:'Xuất Excel thật (SheetJS)',mean:'Để gửi cho sếp / team xài ngay, không cần mình.'},
+ {v:'v17',t:'Nhớ trạng thái cũ',gain:'Nạp lại dữ liệu cũ · drill-down',mean:'Mở lại file là có ngay trạng thái lần trước.'},
+ {v:'v19',t:'Chuẩn hoá lõi',gain:'Chuẩn hoá hệ thống tài khoản (master)',mean:'Một nguồn gốc để các tool sau kế thừa.'},
+ {v:'v25',t:'Xuất thẳng lên sổ kế toán',gain:'Bút toán hạch toán · so sánh ngân sách',mean:'★ Đổi bản chất lần hai: từ "tính" sang "xuất sổ kế toán".',peak:true},
+];
+const STAGE_NAME=['Cục gạch + trục + bánh','Thêm mui xe','Tăng kích thước','Trục xe rời','Khoang rỗng','Thêm cánh','Động cơ cót + bánh răng','Động cơ chạy pin','Điều khiển từ xa'];
+
+/* ---------- interactive state ---------- */
+let cur=0; /* index of currently shown pair (0..8) */
+const legoArt=document.getElementById('legoArt');
+const vcard=document.getElementById('vcard');
+const dotsEl=document.getElementById('dots');
+const revealBtn=document.getElementById('revealBtn');
+const stageCount=document.getElementById('stageCount');
+PAIRS.forEach((p,i)=>{const d=document.createElement('div');d.className='dot'+(p.peak?' peak':'');d.onclick=()=>{cur=i;render();};dotsEl.appendChild(d);});
+function render(){
+  const p=PAIRS[cur];
+  legoArt.innerHTML=lego(cur+1);
+  vcard.className='vcard'+(p.peak?' peak':'');
+  vcard.innerHTML=`<div class="stagelabel">Giai đoạn ${cur+1}/9 · Lego: ${STAGE_NAME[cur]}</div>`+
+    `<div class="vtag">${p.v}</div><h3>${p.t}</h3>`+
+    `<div class="gain"><b>+</b> ${p.gain}</div><div class="mean">${p.mean}</div>`+
+    (LINKS[p.v]
+      ? `<a class="demolink" href="${LINKS[p.v]}" target="_blank" rel="noopener">Mở bản demo ${p.v} →</a>`
+      : `<a class="demolink" href="${DEMO_FOLDER}" target="_blank" rel="noopener" title="Folder Google Drive đã share. Tìm file: ${DEMO_FILE_NAMES[p.v]}">Mở folder demo · ${DEMO_FILE_NAMES[p.v]} →</a>`);
+  [...dotsEl.children].forEach((d,i)=>d.classList.toggle('on',i<=cur));
+  stageCount.textContent=`${cur+1} / 9`;
+  if(cur>=PAIRS.length-1){revealBtn.textContent='↺ Ráp lại từ đầu';revealBtn.classList.add('replay');}
+  else{revealBtn.textContent='Ráp giai đoạn tiếp →';revealBtn.classList.remove('replay');}
+}
+revealBtn.onclick=()=>{cur=(cur>=PAIRS.length-1)?0:cur+1;render();};
+render();
+
+/* ---------- deck navigation ---------- */
+const slides=[...document.querySelectorAll('.slide')];
+const tot=slides.length;let i=0;
+const bar=document.getElementById('bar');
+const curEl=document.getElementById('cur');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+document.getElementById('tot').textContent=String(tot).padStart(2,'0');
+function show(n){
+  i=Math.max(0,Math.min(tot-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  curEl.textContent=String(i+1).padStart(2,'0');
+  bar.style.width=((i+1)/tot*100)+'%';
+  prev.disabled=i===0;next.disabled=i===tot-1;
+}
+next.onclick=()=>show(i+1);prev.onclick=()=>show(i-1);
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='BUTTON')return;
+  if(e.key==='ArrowRight')show(i+1);
+  if(e.key==='ArrowLeft')show(i-1);
+});
+show(0);
+</script>
+</body>
+</html>
