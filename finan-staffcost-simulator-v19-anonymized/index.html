@@ -3,1101 +3,428 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finan · Staff Cost Simulator T6/2026 · Anonymized Demo</title>
+<title>Rabity · Ráp một sản phẩm như ráp xe Lego</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Serif+Display:ital,wght@0,400;1,400&family=Outfit:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext,vietnamese" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;600;700;800&display=swap');
-:root{
-  --bg:#080E18;--surface:#0E1826;--card:#131F30;--border:#1E3048;--border2:#243A56;
-  --text:#C8D8E8;--sub:#6A8AAA;--dim:#3A5470;
-  --gold:#E8B84B;--gold2:#F5D07A;--goldfade:rgba(232,184,75,.12);
-  --teal:#29C4B0;--tealfade:rgba(41,196,176,.1);
-  --red:#E05555;--redfade:rgba(224,85,85,.1);
-  --green:#38C870;--greenfade:rgba(56,200,112,.1);
-  --amber:#F09030;--purple:#9B72E8;--blue:#4A9EE8;
-  --fh:'Sora',sans-serif;--fm:'DM Mono',monospace;
-  --bu1:#29C4B0;--bu2:#9B72E8;--bu3:#4A9EE8;--bu4:#E8B84B;--bu5:#E05555;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--fh);font-size:12.5px;line-height:1.5;overflow-x:hidden}
+  :root{
+    --ink:#0D1B2A;--navy:#1A2E4A;--steel:#2C4A6E;
+    --platinum:#E6E9EF;--muted:#8FA3BC;
+    --gold:#C9A24B;--gold-soft:#E3C77E;
+    --red:#D9685F;--green:#5BBE8A;--line:rgba(201,162,75,.26);
+    --serif:'Noto Serif Display','DM Serif Display',Georgia,'Times New Roman',serif;
+    --mono:'DM Mono','Outfit',ui-monospace,'Courier New',monospace;
+    --sans:'Outfit',system-ui,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--ink);color:var(--platinum);overflow:hidden}
+  .deck{height:100vh;width:100vw;position:relative}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:6vh 8vw 11vh;
+    background:
+      radial-gradient(120% 90% at 86% 8%, rgba(44,74,110,.5) 0%, transparent 55%),
+      radial-gradient(90% 80% at 8% 95%, rgba(26,46,74,.55) 0%, transparent 60%),
+      linear-gradient(160deg,var(--ink) 0%, #0a1622 100%);
+    animation:fade .45s ease;}
+  .slide.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.slide{animation:none}}
 
-/* HEADER */
-.hdr{background:linear-gradient(180deg,#0A1220,var(--bg));border-bottom:1px solid var(--border);padding:14px 24px 10px;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
-.hdr-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.hdr-title{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.3px}
-.hdr-title span{color:var(--gold)}
-.hdr-sub{font-size:10px;color:var(--sub);margin-top:1px;font-family:var(--fm)}
-.hdr-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:4px;font-family:var(--fh);font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s;letter-spacing:.3px}
-.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--sub)}
-.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
-.btn-teal{background:var(--teal);color:#080E18}.btn-teal:hover{opacity:.85}
-.btn-red{background:var(--redfade);border:1px solid rgba(224,85,85,.3);color:var(--red)}.btn-red:hover{background:rgba(224,85,85,.2)}
+  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:1.1rem;display:flex;align-items:center;gap:.85rem}
+  .eyebrow::before{content:"";width:30px;height:1px;background:var(--gold);opacity:.7}
+  .eyebrow.bad{color:var(--red)} .eyebrow.bad::before{background:var(--red)}
 
-/* TABS */
-.tabs-bar{background:var(--surface);border-bottom:2px solid var(--border);padding:0 24px;display:flex;gap:0}
-.tab-btn{padding:9px 18px;font-size:11px;font-weight:700;color:var(--sub);background:none;border:none;cursor:pointer;letter-spacing:.5px;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
-.tab-btn:hover{color:var(--text)}
-.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+  h1{font-family:var(--serif);font-weight:400;line-height:1.04;
+     font-size:clamp(2.3rem,5.6vw,4.8rem);letter-spacing:-.01em;color:#fff}
+  h1 em{font-style:italic;color:var(--gold-soft)}
+  h2{font-family:var(--serif);font-weight:400;line-height:1.1;
+     font-size:clamp(1.7rem,3.8vw,3rem);color:#fff;margin-bottom:.3rem}
+  h2 em{font-style:italic;color:var(--gold-soft)}
+  .lede{font-size:clamp(1rem,1.55vw,1.25rem);color:var(--muted);max-width:64ch;
+        line-height:1.55;font-weight:300;margin-top:1.3rem}
+  .lede strong{color:var(--platinum);font-weight:500}
+  .lede em{font-style:italic;color:var(--gold-soft)}
 
-/* STRIP */
-.strip{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 24px;display:flex;gap:0;overflow-x:auto}
-.kpi{padding:0 18px;border-right:1px solid var(--border);text-align:center;white-space:nowrap;min-width:100px}
-.kpi:first-child{padding-left:0}.kpi:last-child{border-right:none}
-.kpi-lbl{font-size:9px;color:var(--sub);letter-spacing:1.2px;text-transform:uppercase;font-family:var(--fm)}
-.kpi-val{font-family:var(--fm);font-size:14px;font-weight:500;color:var(--gold);margin-top:1px}
-.kpi-val.green{color:var(--green)}.kpi-val.teal{color:var(--teal)}.kpi-val.red{color:var(--red)}
-.kpi-sub{font-size:9px;color:var(--dim);margin-top:1px}
+  .pull{font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2.2rem);line-height:1.25;
+        color:#fff;border-left:2px solid var(--gold);padding-left:1.4rem;max-width:30ch}
+  .pull span{color:var(--gold-soft)}
 
-/* TOOLBAR */
-.toolbar{background:var(--surface);border-bottom:1px solid var(--border);padding:7px 24px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.search-box{position:relative;flex:1;min-width:160px;max-width:240px}
-.search-box input{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:4px;padding:5px 9px 5px 26px;color:var(--text);font-family:var(--fm);font-size:11px}
-.search-box input:focus{outline:none;border-color:var(--teal)}
-.search-box::before{content:'⌕';position:absolute;left:7px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:14px;pointer-events:none}
-.filter-sel{background:var(--card);border:1px solid var(--border2);border-radius:4px;padding:5px 7px;color:var(--text);font-family:var(--fm);font-size:11px;cursor:pointer}
-.filter-sel:focus{outline:none;border-color:var(--teal)}
-.alloc-hint{font-size:10px;color:var(--sub);margin-left:auto}
-.alloc-hint strong{color:var(--amber)}
+  /* ===== interactive pair stage ===== */
+  .stage{display:grid;grid-template-columns:minmax(260px,1fr) 1.1fr;gap:2.6rem;align-items:center;
+         width:100%;max-width:90ch;margin-top:.8rem;min-height:46vh}
+  .legobox{display:flex;align-items:center;justify-content:center;
+           border:1px solid var(--line);border-radius:6px;background:rgba(26,46,74,.28);padding:1rem;min-height:42vh}
+  .legobox svg{width:100%;max-width:340px;height:auto}
+  .vcard .vtag{font-family:var(--mono);font-size:1.5rem;color:var(--gold-soft);letter-spacing:.02em}
+  .vcard .stagelabel{font-family:var(--mono);font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;
+                     color:var(--muted);margin-bottom:.5rem}
+  .vcard h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.4rem,2.4vw,2rem);color:#fff;
+            margin:.3rem 0 .9rem;line-height:1.15}
+  .vcard .gain{font-size:1.05rem;color:var(--platinum);font-weight:300;line-height:1.5}
+  .vcard .gain b{color:var(--green);font-weight:600}
+  .vcard .mean{font-size:.98rem;color:var(--muted);font-weight:300;line-height:1.5;margin-top:.7rem;
+               border-left:2px solid var(--line);padding-left:.9rem}
+  .vcard.peak h3{color:var(--gold-soft)}
+  .demolink{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.2rem;
+    font-family:var(--mono);font-size:.86rem;letter-spacing:.03em;text-decoration:none;
+    color:var(--gold-soft);border:1px solid var(--line);border-radius:3px;
+    padding:.5rem 1rem;transition:.18s}
+  .demolink:hover{border-color:var(--gold);background:rgba(201,162,75,.08)}
+  .demolink.off{color:var(--muted);border-style:dashed;cursor:default;opacity:.65}
 
-/* TABLE PAGES */
-.page{display:none}.page.active{display:block}
+  .dots{display:flex;gap:.5rem;margin-top:1.6rem;flex-wrap:wrap;align-items:center}
+  .dot{width:11px;height:11px;border-radius:50%;background:rgba(143,163,188,.22);transition:.25s;cursor:pointer}
+  .dot.on{background:var(--gold)}
+  .dot.peak.on{background:var(--gold-soft);box-shadow:0 0 0 3px rgba(227,199,126,.18)}
+  .revealbtn{margin-top:1.4rem;display:inline-flex;align-items:center;gap:.6rem;
+    font-family:var(--mono);font-size:.92rem;letter-spacing:.04em;background:var(--gold);
+    color:#0D1B2A;border:none;padding:.7rem 1.3rem;border-radius:3px;cursor:pointer;font-weight:500;transition:.18s}
+  .revealbtn:hover{background:var(--gold-soft)}
+  .revealbtn.replay{background:transparent;color:var(--gold-soft);border:1px solid var(--line)}
+  .stagecount{font-family:var(--mono);font-size:.82rem;color:var(--muted);margin-left:1rem}
 
-/* TABLE */
-.tbl-outer{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 240px)}
-.tbl-outer::-webkit-scrollbar{height:6px;width:6px}
-.tbl-outer::-webkit-scrollbar-track{background:var(--bg)}
-.tbl-outer::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+  .takeaways{display:flex;flex-direction:column;gap:1.05rem;margin-top:1.7rem;max-width:68ch}
+  .ta{display:flex;gap:1.3rem;align-items:baseline}
+  .ta .n{font-family:var(--mono);color:var(--gold);font-size:.92rem;min-width:2.6rem}
+  .ta .x{font-size:1.1rem;line-height:1.45;font-weight:300}
+  .ta .x b{color:#fff;font-weight:600}
 
-table.sim{border-collapse:collapse;width:max-content;min-width:100%}
-table.sim th{background:var(--surface);color:var(--sub);font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;padding:7px 9px;border-bottom:2px solid var(--border2);white-space:nowrap;position:sticky;top:0;z-index:10;text-align:right}
-table.sim th.left{text-align:left}
-table.sim th.center{text-align:center}
-table.sim th:nth-child(1),table.sim td:nth-child(1){position:sticky;left:0;z-index:12;background:inherit}
-table.sim th:nth-child(1){background:var(--surface);z-index:20}
+  .quote{font-family:var(--mono);font-size:.95rem;line-height:1.6;color:var(--platinum);
+    background:rgba(217,104,95,.08);border-left:2px solid var(--red);
+    padding:1.1rem 1.4rem;border-radius:2px;max-width:64ch;margin-top:1.5rem}
+  .quote.ok{background:rgba(91,190,138,.07);border-left-color:var(--green)}
+  .quote .who{display:block;font-family:var(--sans);font-size:.78rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-top:.7rem}
 
-.th-bu1{color:var(--bu1)!important}.th-bu2{color:var(--bu2)!important}.th-bu3{color:var(--bu3)!important}.th-bu4{color:var(--bu4)!important}.th-bu5{color:var(--bu5)!important}
-.th-out1{background:rgba(41,196,176,.05)!important;color:var(--bu1)!important}
-.th-out2{background:rgba(155,114,232,.05)!important;color:var(--bu2)!important}
-.th-out3{background:rgba(74,158,232,.05)!important;color:var(--bu3)!important}
-.th-out4{background:rgba(232,184,75,.05)!important;color:var(--bu4)!important}
-.th-out5{background:rgba(224,85,85,.05)!important;color:var(--bu5)!important}
-.th-sep{border-left:1px solid var(--border2)!important}
+  .steps{display:flex;flex-direction:column;gap:1.05rem;margin-top:1.7rem;max-width:62ch}
+  .step{display:flex;gap:1.3rem;align-items:baseline}
+  .step .num{font-family:var(--mono);color:var(--gold);font-size:.95rem;min-width:2.4rem}
+  .step .txt{font-size:1.1rem;line-height:1.45;font-weight:300}
+  .step .txt b{color:#fff;font-weight:600}
 
-tr.dept-hdr{background:var(--card)}
-tr.dept-hdr td{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.2px;padding:9px 10px 6px;border-top:2px solid var(--border2);border-bottom:1px solid var(--border)}
-tr.dept-hdr td:first-child{border-left:3px solid var(--gold)}
-tr.person-row{background:var(--bg);transition:background .1s}
-tr.person-row:hover{background:#0C1520}
-tr.person-row.inactive-row{opacity:.4}
-tr.person-row td{border-bottom:1px solid var(--border);padding:5px 9px;vertical-align:middle;text-align:right}
-tr.person-row td.left{text-align:left}
-tr.person-row td.center{text-align:center}
-tr.new-row td{background:rgba(41,196,176,.03);border-bottom:1px solid rgba(41,196,176,.12)}
-tr.dept-total{background:var(--card)}
-tr.dept-total td{padding:6px 9px;text-align:right;border-bottom:2px solid var(--border2);font-family:var(--fm);font-size:11px;font-weight:500;color:var(--gold);border-top:1px solid var(--border2)}
-tr.dept-total td:first-child{text-align:left;font-size:10px;letter-spacing:.5px}
-tr.grand-total{background:var(--surface)}
-tr.grand-total td{padding:8px 9px;text-align:right;border-top:2px solid var(--gold);font-family:var(--fm);font-size:12px;font-weight:500;color:var(--gold2);position:sticky;bottom:0;z-index:9}
-tr.grand-total td:first-child{text-align:left;font-size:11px;font-weight:700}
+  .nav{position:fixed;bottom:0;left:0;right:0;height:6vh;min-height:52px;display:flex;
+    align-items:center;justify-content:space-between;padding:0 8vw;background:rgba(8,16,28,.8);
+    backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:30}
+  .nav .meta{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;color:var(--muted)}
+  .nav .meta b{color:var(--gold)}
+  .controls{display:flex;gap:.7rem}
+  button.ctrl{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;background:transparent;
+    color:var(--platinum);border:1px solid var(--line);padding:.5rem 1.05rem;border-radius:2px;
+    cursor:pointer;transition:.18s}
+  button.ctrl:hover{border-color:var(--gold);color:var(--gold-soft)}
+  button.ctrl:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  button.ctrl:disabled{opacity:.3;cursor:default}
+  .progress{position:fixed;top:0;left:0;height:2px;background:var(--gold);z-index:40;transition:width .3s}
 
-/* INPUTS */
-.inp-adj{width:72px;background:var(--card);border:1px solid var(--border2);border-radius:3px;padding:3px 6px;color:var(--text);font-family:var(--fm);font-size:11px;text-align:right}
-.inp-adj:focus{outline:none;border-color:var(--teal);background:#0E1F30}
-.inp-alloc{width:50px;background:transparent;border:1px solid transparent;border-radius:3px;padding:3px 4px;color:var(--text);font-family:var(--fm);font-size:11px;text-align:center;transition:border .1s}
-.inp-alloc:focus{outline:none;border-color:var(--teal);background:var(--card)}
-.inp-alloc.bu1:focus{border-color:var(--bu1)}.inp-alloc.bu2:focus{border-color:var(--bu2)}.inp-alloc.bu3:focus{border-color:var(--bu3)}.inp-alloc.bu4:focus{border-color:var(--bu4)}.inp-alloc.bu5:focus{border-color:var(--bu5)}
-.inp-alloc.over{background:rgba(224,85,85,.12);border-color:rgba(224,85,85,.4)!important;color:var(--red)!important}
-.inp-alloc.full{background:rgba(56,200,112,.07);border-color:rgba(56,200,112,.25)}
-.inp-alloc.dim-bu{opacity:.22;background:rgba(255,255,255,.01)}
-.alloc-sum{display:inline-block;min-width:28px;text-align:center;font-family:var(--fm);font-size:10px;border-radius:2px;padding:1px 4px}
-.alloc-sum.ok{background:rgba(56,200,112,.15);color:var(--green)}.alloc-sum.over{background:rgba(224,85,85,.15);color:var(--red)}.alloc-sum.zero{color:var(--dim)}
-
-/* STATUS & DELETE */
-.status-toggle{cursor:pointer;padding:2px 7px;border-radius:3px;font-family:var(--fm);font-size:10px;font-weight:500;border:none;transition:all .15s;white-space:nowrap}
-.status-toggle.active{background:rgba(56,200,112,.15);color:var(--green);border:1px solid rgba(56,200,112,.3)}
-.status-toggle.inactive{background:rgba(224,85,85,.1);color:var(--red);border:1px solid rgba(224,85,85,.2)}
-.del-btn{background:rgba(224,85,85,.12);border:1px solid rgba(224,85,85,.2);color:var(--red);border-radius:3px;padding:2px 6px;cursor:pointer;font-size:11px;font-family:var(--fm);line-height:1}
-.del-btn:hover{background:rgba(224,85,85,.25)}
-
-/* PL SELECT */
-.pl-select{background:var(--card);border:1px solid var(--border2);border-radius:3px;padding:2px 5px;color:var(--sub);font-family:var(--fm);font-size:9px;max-width:175px;cursor:pointer}
-.pl-select:focus{outline:none;border-color:var(--purple);color:var(--text)}
-
-/* NAME CELL */
-.name-cell{display:flex;flex-direction:column;min-width:150px}
-.name-main{font-weight:600;color:#fff;font-size:12px}
-.name-pos{font-size:9px;color:var(--sub);margin-top:1px}
-.name-new{font-size:9px;color:var(--teal);font-family:var(--fm)}
-
-/* OUTPUT VALS */
-.out-val{font-family:var(--fm);font-size:11px}
-.out-val.has-val{font-weight:500}
-.out-val.bu1{color:var(--bu1)}.out-val.bu2{color:var(--bu2)}.out-val.bu3{color:var(--bu3)}.out-val.bu4{color:var(--bu4)}.out-val.bu5{color:var(--bu5)}
-
-/* SUMMARY SHEET */
-.summary-wrap{padding:20px 24px;display:flex;flex-direction:column;gap:20px}
-.sec-title{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid rgba(232,184,75,.2);margin-bottom:12px}
-.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.sum-box{background:var(--surface);border:1px solid var(--border2);border-radius:4px;overflow-x:auto}
-.sum-tbl{width:100%;border-collapse:collapse;font-size:11.5px}
-.sum-tbl th{background:rgba(232,184,75,.07);font-family:var(--fm);font-size:9px;font-weight:500;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;padding:7px 10px;text-align:right;border-bottom:1px solid var(--border2);white-space:nowrap}
-.sum-tbl th:first-child{text-align:left}
-.sum-tbl td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.03);text-align:right;font-family:var(--fm);white-space:nowrap}
-.sum-tbl td:first-child{text-align:left;color:var(--text);font-weight:600}
-.sum-tbl tr:hover td{background:rgba(255,255,255,.02)}
-.sum-tbl tr.sum-total td{background:rgba(232,184,75,.07);color:var(--gold2);font-weight:700;border-top:2px solid rgba(232,184,75,.25);border-bottom:none}
-.sum-tbl tr.sum-total td:first-child{text-align:left}
-.note-box{padding:8px 12px;font-size:10px;color:var(--dim)}
-
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.modal-overlay.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:22px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto}
-.modal h2{font-size:14px;font-weight:800;color:var(--gold);margin-bottom:14px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.form-field{display:flex;flex-direction:column;gap:3px}
-.form-field.full{grid-column:1/-1}
-.form-field label{font-size:10px;color:var(--sub);font-family:var(--fm);letter-spacing:.5px;text-transform:uppercase}
-.form-field input,.form-field select{background:var(--surface);border:1px solid var(--border2);border-radius:4px;padding:6px 9px;color:var(--text);font-family:var(--fm);font-size:12px}
-.form-field input:focus,.form-field select:focus{outline:none;border-color:var(--teal)}
-.form-field input[readonly]{background:rgba(41,196,176,.05);border-color:rgba(41,196,176,.2);color:var(--teal)}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
-
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+  @media (max-width:860px){
+    .slide{padding:5vh 6.5vw 13vh}
+    .stage{grid-template-columns:1fr;gap:1.2rem;min-height:auto}
+    .legobox{min-height:32vh}.legobox svg{max-width:280px}
+  }
 </style>
 </head>
 <body>
+<div class="progress" id="bar"></div>
+<div class="deck" id="deck">
 
-<!-- HEADER -->
-<div class="hdr">
-  <div class="hdr-top">
+  <!-- 1 — title (Lego framing) -->
+  <section class="slide active">
+    <div class="eyebrow">Rabity · Internal Session</div>
+    <h1>Ráp một sản phẩm<br>như ráp một <em>chiếc xe Lego.</em></h1>
+    <p class="lede">Không ai ráp xe Lego hoàn chỉnh trong một lần. Bắt đầu từ một cục gạch xấu xí gắn tạm bốn bánh — rồi thêm dần, sửa dần, tới khi nó chạy bằng pin và điều khiển từ xa. Build sản phẩm bằng AI <strong>y hệt như vậy.</strong></p>
+  </section>
+
+  <!-- 2 — the ugly brick that rolls -->
+  <section class="slide">
+    <div class="eyebrow">Ẩn dụ mở màn</div>
+    <h2>Cục gạch xấu — nhưng <em>đẩy là lăn.</em></h2>
+    <p class="lede">Chiếc xe Lego đầu tiên chỉ là: một thân hình viên gạch, hai thanh sắt xuyên qua lỗ, bốn bánh. Nhìn chẳng ra xe. Nhưng <strong>nó lăn được.</strong></p>
+    <p class="lede" style="margin-top:.9rem">Đó là toàn bộ tinh thần hôm nay: <em>bản đầu xấu mà chạy được</em> còn hơn bản hoàn hảo trong tưởng tượng. Giờ mình cho xem cái tool thật của Finan đã "ráp" qua 9 giai đoạn đúng kiểu Lego như thế nào.</p>
+  </section>
+
+  <!-- 3 — the pain -->
+  <section class="slide">
+    <div class="eyebrow">Điểm xuất phát · Nỗi đau</div>
+    <h2>Cái "xe" cần ráp ở đây là gì?</h2>
+    <div class="pull">"Tuyển thêm, tăng lương, có người nghỉ — <span>quỹ lương tháng tới đi về đâu?</span>"</div>
+    <p class="lede">125 nhân sự, mỗi kỳ ngân sách lại dựng lại file Excel từ đầu, sửa một ô sai cả bảng. <strong>Mình không bắt đầu vì muốn build tool — mình bắt đầu vì việc này hành mình mỗi tháng.</strong> Đó luôn là cục gạch đầu tiên: một nỗi đau thật.</p>
+    <p class="lede" style="margin-top:.8rem">Ở Rabity, bài toán tương tự cũng rất gần: <strong>tự động hoá quy trình tính lương, phân bổ chi phí và tạo bút toán kế toán.</strong> Vì vậy case này không phải chuyện xa lạ — nó là một phiên bản khác của chính bài toán vận hành nội bộ.</p>
+  </section>
+
+  <!-- 4 — INTERACTIVE 9 PAIRS -->
+  <section class="slide" id="legoSlide">
+    <div class="eyebrow">Bằng chứng · 9 giai đoạn ↔ 9 bản thật</div>
+    <h2 style="margin-bottom:.2rem">Mỗi bản = ráp thêm <em>đúng một bộ phận.</em></h2>
+    <div class="stage">
+      <div class="legobox"><div id="legoArt"></div></div>
+      <div class="vcard" id="vcard"></div>
+    </div>
     <div>
-      <div class="hdr-title">FINAN · <span>Staff Cost Simulator</span> — T6/2026 · Anonymized Demo</div>
-      <div class="hdr-sub">Base: Company Expense T5 (incl. Lương 13) · 125 nhân sự · ACC 642111</div>
+      <div class="dots" id="dots"></div>
+      <button class="revealbtn" id="revealBtn">Ráp giai đoạn tiếp →</button>
+      <span class="stagecount" id="stageCount"></span>
     </div>
-    <div class="hdr-actions">
-      <button class="btn btn-ghost" onclick="openModal()">＋ Thêm nhân sự</button>
-      <button class="btn btn-ghost" onclick="triggerImportCSV()" title="Import CSV từ file export trước">⬆ Import CSV</button>
-      <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="importCSV(event)">
-      <button class="btn btn-ghost" onclick="resetAlloc()">↺ Reset Alloc</button>
-      <button class="btn btn-red" onclick="clearSavedState()" title="Reset về T5 gốc">✕ Clear Save</button>
-      <button class="btn btn-ghost" onclick="exportCSV()">⬇ CSV</button>
-      <button class="btn btn-ghost" onclick="exportSummaryCSV()">⬇ Summary CSV</button>
-      <button class="btn btn-teal" onclick="exportJSON()">⬇ JSON</button>
-      <span id="save-indicator" style="font-size:10px;color:var(--dim);font-family:var(--fm)">—</span>
+  </section>
+
+  <!-- 5 — read the shape -->
+  <section class="slide">
+    <div class="eyebrow">Đọc lại 9 giai đoạn</div>
+    <h2>Để ý hai chỗ <em>đổi bản chất</em>, không chỉ thêm thắt.</h2>
+    <p class="lede"><strong>Lần một — từ "báo cáo" thành "công cụ".</strong> Ba bản đầu (cục gạch, thêm mui, to ra) chỉ là report tĩnh để nhìn cho hiểu. Tới v1 — "trục xe rời" — nó mới biết thêm/bớt người, tự tính lại. Đó là lúc nó <em>thành một chiếc xe chạy được.</em></p>
+    <p class="lede" style="margin-top:.8rem"><strong>Lần hai — v25, "điều khiển từ xa".</strong> Tới đó mình mới nhận ra cái mình cần không phải "tính chi phí", mà là <em>ra được bút toán để hạch toán lên sổ</em> — một bài toán khác hẳn, chỉ lộ ra sau khi đã dùng tool đủ lâu.</p>
+    <div class="quote ok">Không ai vẽ được bản thiết kế chiếc xe hoàn chỉnh từ đầu. Bạn ráp → bạn chạy thử → bạn mới biết bộ phận tiếp theo cần gì. Đó là lý do phải có 9 giai đoạn, không phải vì làm ẩu.
+      <span class="who">Đây là điều một người học nên thấy rõ nhất</span>
     </div>
+  </section>
+
+  <!-- 6 — the dirt -->
+  <section class="slide">
+    <div class="eyebrow bad">Phần không ai khoe</div>
+    <h2>Giữa các giai đoạn là <em>va vấp.</em></h2>
+    <p class="lede" style="max-width:64ch">Hình thì gọn, nhưng tay thì bẩn:</p>
+    <div class="takeaways" style="margin-top:1.2rem">
+      <div class="ta"><div class="n">→</div><div class="x">Data thật <b>bẩn hơn tưởng</b>: file ghi nhầm chức danh, người đã nghỉ vẫn còn, khoản điều chỉnh phải mang sang tháng sau — ngồi sửa tay từng chỗ.</div></div>
+      <div class="ta"><div class="n">→</div><div class="x">Có bản <b>ra số rất đẹp nhưng sai hết</b> — một ô trạng thái nhét nhầm giá trị làm mọi phép tính lệch, mà bảng nhìn vẫn mượt.</div></div>
+      <div class="ta"><div class="n">→</div><div class="x">Có lần định ráp <b>"xịn" hơn rồi phải tháo ra</b>: tách cấu hình ra file riêng nghe rất hay, lắp xong mới biết mở file là chết — phải quay về cách xấu hơn nhưng chạy được.</div></div>
+    </div>
+    <p class="lede" style="margin-top:1.3rem"><strong>Mỗi lần tháo-lắp lại là một bản mới.</strong> Lặp lại không phải là dở — nó chính là cách chiếc xe lớn lên.</p>
+  </section>
+
+  <!-- 7 — how I work with AI -->
+  <section class="slide">
+    <div class="eyebrow">Sự thật về cách làm</div>
+    <h2>Mình không gõ code. Mình <em>cãi nhau</em> với AI.</h2>
+    <p class="lede" style="max-width:64ch">Quy trình thật giữa mỗi giai đoạn không sạch sẽ. Nó lặp đi lặp lại, nhiều lần bực:</p>
+    <div class="quote ok" style="margin-top:1.1rem">"Tả cái mình muốn" → AI ráp ra bản lệch → "Không, ý tao là..." → sửa → "Vẫn sai chỗ này" → sửa tiếp → ... → đúng → chạy thử → tháng sau lại thấy thiếu → giai đoạn mới.
+      <span class="who">9 giai đoạn là 9 vòng tháo-lắp như vậy</span>
+    </div>
+    <p class="lede" style="margin-top:1.3rem">AI không đọc được suy nghĩ. <strong>Nó giỏi đúng bằng độ rõ ràng của bạn.</strong> Tả mơ hồ → ráp ra mơ hồ. Đưa ví dụ thật, chỉ thẳng chỗ sai → mới ra được thứ dùng được. Cái khó nằm ở <em>biết rõ mình muốn ráp cái gì</em>, không ở kỹ thuật.</p>
+  </section>
+
+  <!-- 8 — takeaways -->
+  <section class="slide">
+    <div class="eyebrow">Rút ra từ 9 giai đoạn</div>
+    <h2>Năm điều một người học nên mang về.</h2>
+    <div class="takeaways">
+      <div class="ta"><div class="n">01</div><div class="x"><b>Bắt đầu từ nỗi đau thật</b> của mình, không phải từ "AI làm được gì".</div></div>
+      <div class="ta"><div class="n">02</div><div class="x"><b>Ráp cục gạch xấu trước.</b> Xe lăn được hôm nay hơn xe hoàn hảo trong đầu.</div></div>
+      <div class="ta"><div class="n">03</div><div class="x"><b>Mỗi giai đoạn thêm đúng một bộ phận</b> đang thiếu — đừng ôm tất cả từ đầu.</div></div>
+      <div class="ta"><div class="n">04</div><div class="x"><b>Tự nghi ngờ kết quả.</b> Xe nhìn đẹp không có nghĩa là nó chạy đúng.</div></div>
+      <div class="ta"><div class="n">05</div><div class="x"><b>Tháo-lắp lại là trưởng thành, không phải dở.</b> Sản phẩm lớn lên trong vòng lặp.</div></div>
+    </div>
+  </section>
+
+  <!-- 9 — your turn -->
+  <section class="slide">
+    <div class="eyebrow">Phần của bạn</div>
+    <h2>Tuần này — ráp một "cục gạch" của bạn.</h2>
+    <div class="steps">
+      <div class="step"><div class="num">01</div><div class="txt">Chọn <b>một việc</b> bạn làm lặp lại, tốn thời gian, hay sai.</div></div>
+      <div class="step"><div class="num">02</div><div class="txt">Tả cho AI <b>như tả cho người mới</b> — kèm một ví dụ thật của bạn.</div></div>
+      <div class="step"><div class="num">03</div><div class="txt">Bản đầu chắc chắn lệch. <b>Chỉ thẳng chỗ sai, bảo nó ráp lại.</b> Lặp lại.</div></div>
+      <div class="step"><div class="num">04</div><div class="txt">Đừng đợi nó chạy bằng pin mới dùng. <b>Đẩy cục gạch trước, rồi để nó lớn dần.</b></div></div>
+    </div>
+  </section>
+
+  <!-- 10 — close -->
+  <section class="slide">
+    <div class="eyebrow">Khép lại</div>
+    <h1>Đừng sợ<br><em>cục gạch xấu xí.</em></h1>
+    <p class="lede">Cái tool mình khoe hôm nay từng là một tờ báo cáo tĩnh, không nhập được gì. Nó tới được "xe chạy pin điều khiển từ xa" chỉ vì <strong>mình không bỏ nó ở cục gạch đầu tiên.</strong> Việc nào của bạn đáng có một cục gạch — ngay tuần này?</p>
+  </section>
+
+</div>
+
+<nav class="nav">
+  <div class="meta">RABITY · BUILD LIKE LEGO · <b id="cur">01</b> / <span id="tot">10</span></div>
+  <div class="controls">
+    <button class="ctrl" id="prev">← Trước</button>
+    <button class="ctrl" id="next">Tiếp →</button>
   </div>
-</div>
-
-<!-- TABS -->
-<div class="tabs-bar">
-  <button class="tab-btn active" onclick="showTab('simulator',this)">📋 Simulator</button>
-  <button class="tab-btn" onclick="showTab('summary',this)">📊 Summary</button>
-</div>
-
-<!-- STRIP -->
-<div class="strip" id="strip"></div>
-
-<!-- TOOLBAR (simulator only) -->
-<div class="toolbar" id="toolbar">
-  <div class="search-box"><input type="text" id="search" placeholder="Tìm tên, chức danh..." oninput="filterTable()"></div>
-  <select class="filter-sel" id="filter-dept" onchange="filterTable()">
-    <option value="">Tất cả phòng ban</option>
-    <option>MANAGEMENT</option><option>ACCOUNTING & FINANCE</option><option>HR</option>
-    <option>CUSTOMER SERVICE & SUCCESS</option><option>MARKETING</option>
-    <option>PARTNERSHIP</option><option>PRODUCT MANAGEMENT</option><option>PRODUCT OPS</option>
-    <option>SALES & BUSINESS DEVELOPMENT</option><option>SYSTEM & ENGINEERING</option>
-  </select>
-  <select class="filter-sel" id="filter-status" onchange="filterTable()">
-    <option value="">Tất cả status</option>
-    <option value="active">Active</option><option value="inactive">Inactive</option>
-  </select>
-  <select class="filter-sel" id="filter-pl" onchange="filterTable()">
-    <option value="">Tất cả P&L line</option>
-    <option>4.1 Staff cost — Salary</option><option>6.1 Staff - Customer Operation</option>
-    <option>6.3 Staff - Product Development</option><option>6.4 Staff - Technology</option>
-    <option>6.5 Staff - Marketing</option><option>7.1 Staff - Management</option>
-    <option>7.2 Staff - Accounting & Finance</option><option>7.3 Staff - Human Resource</option>
-    <option>7.4 Staff - Partnership</option>
-  </select>
-  <div class="alloc-hint">% alloc · bước nhảy 10% · <strong>Tổng = 100%</strong></div>
-</div>
-
-<!-- PAGE: SIMULATOR -->
-<div class="page active" id="page-simulator">
-  <div class="tbl-outer">
-    <table class="sim">
-      <thead id="sim-thead"></thead>
-      <tbody id="sim-tbody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- PAGE: SUMMARY -->
-<div class="page" id="page-summary">
-  <div class="summary-wrap" id="summary-content"></div>
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <h2>＋ Thêm nhân sự mới (T6)</h2>
-    <div class="form-grid">
-      <div class="form-field full">
-        <label>Họ và Tên *</label>
-        <input type="text" id="new-name" placeholder="Alex Carter">
-      </div>
-      <div class="form-field">
-        <label>Chức danh</label>
-        <input type="text" id="new-position" placeholder="Software Engineer">
-      </div>
-      <div class="form-field">
-        <label>Phòng ban *</label>
-        <select id="new-dept">
-          <option value="MANAGEMENT">Management</option>
-          <option value="ACCOUNTING & FINANCE">Accounting & Finance</option>
-          <option value="HR">HR</option>
-          <option value="CUSTOMER SERVICE & SUCCESS">Customer Service & Success</option>
-          <option value="MARKETING">Marketing</option>
-          <option value="PARTNERSHIP">Partnership</option>
-          <option value="PRODUCT MANAGEMENT">Product Management</option>
-          <option value="PRODUCT OPS">Product OPS</option>
-          <option value="SALES & BUSINESS DEVELOPMENT">Sales & Business Development</option>
-          <option value="SYSTEM & ENGINEERING">System & Engineering</option>
-        </select>
-      </div>
-      <div class="form-field">
-        <label>Gross Salary/tháng (M VND)</label>
-        <input type="number" id="new-gross" placeholder="20" step="0.5" oninput="autoCalcBase()">
-      </div>
-      <div class="form-field">
-        <label>Company Expense Base (M VND) <span style="color:var(--teal);font-size:9px">= Gross × 1.30</span></label>
-        <input type="number" id="new-base" placeholder="26" step="0.5" readonly>
-      </div>
-      <div class="form-field">
-        <label>Salary Adjustment (M VND)</label>
-        <input type="number" id="new-adj" placeholder="0" step="0.5">
-      </div>
-      <div class="form-field full">
-        <label>P&L Line</label>
-        <select id="new-pl">
-          <option>4.1 Staff cost — Salary</option><option>6.1 Staff - Customer Operation</option>
-          <option>6.3 Staff - Product Development</option><option>6.4 Staff - Technology</option>
-          <option>6.5 Staff - Marketing</option><option>7.1 Staff - Management</option>
-          <option>7.2 Staff - Accounting & Finance</option><option>7.3 Staff - Human Resource</option>
-          <option>7.4 Staff - Partnership</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Huỷ</button>
-      <button class="btn btn-teal" onclick="addPerson()">Thêm nhân sự</button>
-    </div>
-  </div>
-</div>
+</nav>
 
 <script>
-const PERSONS_RAW = [{"id": 1,"name": "Alex Carter","position": "Chief Accountant","dept": "ACCOUNTING & FINANCE","dept_label": "Accounting & Finance","income": 30000000,"base": 38740000,"adj": 0,"status": "active","pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 2,"name": "Jordan Miller","position": "Service Accounting Lead","dept": "ACCOUNTING & FINANCE","dept_label": "Accounting & Finance","income": 4000000,"base": 4000000,"adj": 0,"status": "active","pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 3,"name": "Taylor Johnson","position": "General Accountant","dept": "ACCOUNTING & FINANCE","dept_label": "Accounting & Finance","income": 11675000,"base": 11675000,"adj": 0,"status": "active","pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 4,"name": "Morgan Smith","position": "Financial Lead","dept": "ACCOUNTING & FINANCE","dept_label": "Accounting & Finance","income": 20000000,"base": 25990000,"adj": 0,"status": "active","pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 5,"name": "Casey Brown","position": "Customer Support Lead","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 13000000,"base": 19215000,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 6,"name": "Riley Davis","position": "Customer Support","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9000000,"base": 12508125,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 7,"name": "Avery Wilson","position": "Customer Support","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9791667,"base": 16607709,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 8,"name": "Cameron Anderson","position": "Customer Support","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9000000,"base": 14545625,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 9,"name": "Jamie Thomas","position": "Customer Support","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9000000,"base": 11805000,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 10,"name": "Quinn Moore","position": "CS & Partnership Mananger","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 48875000,"base": 50523333,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 11,"name": "Sam Taylor","position": "Customer Support","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9000000,"base": 15995626,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 12,"name": "Drew Martin","position": "Customer Support","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9000000,"base": 12859688,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 13,"name": "Harper Clark","position": "CS Admin","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9000000,"base": 11805000,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 14,"name": "Reese Lewis","position": "Customer Support","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9000000,"base": 16562813,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 15,"name": "Blake Walker","position": "","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 9000000,"base": 12930000,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 16,"name": "Parker Hall","position": "Operations Manager","dept": "CUSTOMER SERVICE & SUCCESS","dept_label": "CS & Success","income": 3437500,"base": 3816667,"adj": 0,"status": "active","pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 17,"name": "Hayden Allen","position": "HR Executive","dept": "HR","dept_label": "HR","income": 7000000,"base": 9794375,"adj": 0,"status": "active","pl_line": "7.3 Staff - Human Resource","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 18,"name": "Rowan Young","position": "HR Lead","dept": "HR","dept_label": "HR","income": 20000000,"base": 26290000,"adj": 0,"status": "active","pl_line": "7.3 Staff - Human Resource","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 19,"name": "Emerson King","position": "Chief Product Officer","dept": "MANAGEMENT","dept_label": "Management","income": 40000000,"base": 51090000,"adj": 0,"status": "active","pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 20,"name": "Finley Wright","position": "CEO","dept": "MANAGEMENT","dept_label": "Management","income": 46800000,"base": 59488000,"adj": 0,"status": "active","pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 21,"name": "Logan Scott","position": "Chief Marketing Officer","dept": "MANAGEMENT","dept_label": "Management","income": 150000000,"base": 163882000,"adj": 0,"status": "active","pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 22,"name": "Charlie Green","position": "General Manager (FinanOne)","dept": "MANAGEMENT","dept_label": "Management","income": 46083333,"base": 49441666,"adj": 0,"status": "active","pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 23,"name": "Skyler Baker","position": "Chief of Staff","dept": "MANAGEMENT","dept_label": "Management","income": 50000000,"base": 62720000,"adj": 0,"status": "active","pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 24,"name": "Kendall Adams","position": "Chief Finance Officer","dept": "MANAGEMENT","dept_label": "Management","income": 50000000,"base": 63320000,"adj": 0,"status": "active","pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 25,"name": "Bailey Nelson","position": "Product Marketing Manager","dept": "MARKETING","dept_label": "Marketing","income": 45000000,"base": 59065000,"adj": 0,"status": "active","pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 26,"name": "Sydney Hill","position": "Brand & Partnership Executive","dept": "MARKETING","dept_label": "Marketing","income": 11000000,"base": 14625000,"adj": 0,"status": "active","pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 27,"name": "Elliot Campbell","position": "Graphic Designer","dept": "MARKETING","dept_label": "Marketing","income": 19000000,"base": 25936250,"adj": 0,"status": "active","pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 28,"name": "Robin Mitchell","position": "Digital Marketing Specialist","dept": "MARKETING","dept_label": "Marketing","income": 25000000,"base": 35665000,"adj": 0,"status": "active","pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 29,"name": "Spencer Roberts","position": "Assistant Growth Manager","dept": "MARKETING","dept_label": "Marketing","income": 33000000,"base": 41445000,"adj": 0,"status": "active","pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 30,"name": "Addison Turner","position": "Digital Marketing Manager","dept": "MARKETING","dept_label": "Marketing","income": 42187500,"base": 64390000,"adj": 0,"status": "active","pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 31,"name": "Devon Phillips","position": "Content Marketing","dept": "MARKETING","dept_label": "Marketing","income": 11000000,"base": 15505000,"adj": 0,"status": "active","pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 32,"name": "Frankie Parker","position": "Sr. Content Creator","dept": "MARKETING","dept_label": "Marketing","income": 8181250,"base": 8664375,"adj": 0,"status": "active","pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 33,"name": "Jesse Evans","position": "Business Development Manager","dept": "PARTNERSHIP","dept_label": "Partnership","income": 34800000,"base": 34800000,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 34,"name": "Marley Edwards","position": "BD Manager","dept": "PARTNERSHIP","dept_label": "Partnership","income": 33000000,"base": 42445000,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 35,"name": "Payton Collins","position": "Business Development Manager","dept": "PARTNERSHIP","dept_label": "Partnership","income": 38000000,"base": 48620000,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 36,"name": "Sage Stewart","position": "BD Executive","dept": "PARTNERSHIP","dept_label": "Partnership","income": 15000000,"base": 19515000,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 37,"name": "Terry Morris","position": "Partner Operations","dept": "PARTNERSHIP","dept_label": "Partnership","income": 14000000,"base": 19080000,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 38,"name": "Ariel Rogers","position": "Project Manager","dept": "PARTNERSHIP","dept_label": "Partnership","income": 5416667,"base": 5566667,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 39,"name": "Dakota Reed","position": "Business Development Specialist","dept": "PARTNERSHIP","dept_label": "Partnership","income": 13033333,"base": 14590000,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 40,"name": "Shawn Cook","position": "Business Development Specialist","dept": "PARTNERSHIP","dept_label": "Partnership","income": 13600000,"base": 15171250,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 41,"name": "Corey Morgan","position": "PMO","dept": "PARTNERSHIP","dept_label": "Partnership","income": 13750000,"base": 23021250,"adj": 0,"status": "active","pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 42,"name": "Mackenzie Bell","position": "Product Owner","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 30000000,"base": 38090000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 43,"name": "Kris Murphy","position": "Business Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 5950000,"base": 7361875,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 44,"name": "Leslie Bailey","position": "Business Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 15000000,"base": 19565000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 45,"name": "Marion Cooper","position": "Business Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 10000000,"base": 13390000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 46,"name": "Nicky Richardson","position": "Head of Product","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 84500000,"base": 106165000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 47,"name": "Pat Cox","position": "UI/UX Designer","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 17000000,"base": 25085000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 48,"name": "River Howard","position": "UI/UX Designer","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 5100000,"base": 5100000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 49,"name": "Toby Ward","position": "Business Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 30000000,"base": 38090000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 50,"name": "Wren Brooks","position": "Data Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 0,"base": 0,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 51,"name": "Alex Miller","position": "Business Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 9500000,"base": 12772500,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 52,"name": "Jordan Johnson","position": "Data Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 15840000,"base": 15840000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 53,"name": "Taylor Smith","position": "","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 3612500,"base": 4150000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 54,"name": "Morgan Brown","position": "General Manager (FinanOne)","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 130000000,"base": 130000000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 55,"name": "Casey Davis","position": "UI/UX Designer","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 6800000,"base": 7840000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 56,"name": "Riley Wilson","position": "UI/UX Designer","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 11000000,"base": 14625000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 57,"name": "Avery Anderson","position": "Business Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 2727083,"base": 3487500,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 58,"name": "Cameron Thomas","position": "Business Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 19166667,"base": 25673334,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 59,"name": "Jamie Moore","position": "Data Analyst","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 15000000,"base": 19565000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 60,"name": "Quinn Taylor","position": "Product Owner","dept": "PRODUCT MANAGEMENT","dept_label": "Product Management","income": 39500000,"base": 49822500,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 61,"name": "Sam Martin","position": "PS Lead","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 13000000,"base": 19921250,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 62,"name": "Drew Clark","position": "Sr. Software QA/QC","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 32000000,"base": 50185000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 63,"name": "Harper Lewis","position": "Software QA/QC","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 7000000,"base": 9685000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 64,"name": "Reese Walker","position": "QA Lead","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 55000000,"base": 77670000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 65,"name": "Blake Hall","position": "Head of Digital BA","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 0,"base": 0,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 66,"name": "Parker Allen","position": "Software QA/QC","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 15800000,"base": 21850000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 67,"name": "Hayden Young","position": "Technical Suppoter","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 10000000,"base": 16111875,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 68,"name": "Rowan King","position": "Software QA/QC","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 7000000,"base": 10942813,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 69,"name": "Emerson Wright","position": "Technical Suppoter","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 9791667,"base": 15283750,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 70,"name": "Finley Scott","position": "Software QA/QC","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 12000000,"base": 15860000,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 71,"name": "Logan Green","position": "Software QA/QC","dept": "PRODUCT OPS","dept_label": "Product OPS","income": 11000000,"base": 17135938,"adj": 0,"status": "active","pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 72,"name": "Charlie Baker","position": "Direct Sales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6200000,"base": 9375125,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 73,"name": "Skyler Adams","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6600000,"base": 9302833,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 74,"name": "Kendall Nelson","position": "Direct Sales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6375000,"base": 7415000,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 75,"name": "Bailey Hill","position": "Sales Admin","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 10000000,"base": 14223333,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 76,"name": "Sydney Campbell","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 8206250,"base": 11600750,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 77,"name": "Elliot Mitchell","position": "Direct Sales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 1062500,"base": 1240833,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 78,"name": "Robin Roberts","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6200000,"base": 8734500,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 79,"name": "Spencer Turner","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7531250,"base": 9913250,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 80,"name": "Addison Phillips","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6806254,"base": 8953254,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 81,"name": "Devon Parker","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7200000,"base": 10369500,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 82,"name": "Frankie Evans","position": "Sales Manager","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 32500000,"base": 41827500,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 83,"name": "Jesse Edwards","position": "Direct Sales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6375000,"base": 8459531,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 84,"name": "Marley Collins","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 5812500,"base": 7959500,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 85,"name": "Payton Stewart","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7200000,"base": 10369500,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 86,"name": "Sage Morris","position": "Sales Lead","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 22395833,"base": 29840521,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 87,"name": "Terry Rogers","position": "Direct Sales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6375000,"base": 7415000,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 88,"name": "Ariel Reed","position": "Direct Sales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7200000,"base": 10369500,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 89,"name": "Dakota Cook","position": "Direct Sales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7200000,"base": 10719500,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 90,"name": "Shawn Morgan","position": "Sales Lead","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 18645833,"base": 25249896,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 91,"name": "Corey Bell","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7643750,"base": 10025750,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 92,"name": "Mackenzie Murphy","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7050000,"base": 9432000,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 93,"name": "Kris Bailey","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7643750,"base": 10025750,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 94,"name": "Leslie Cooper","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 8993750,"base": 12163250,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 95,"name": "Marion Richardson","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6750000,"base": 9919500,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 96,"name": "Nicky Cox","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6418750,"base": 8565750,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 97,"name": "Pat Howard","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 7200000,"base": 9582000,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 98,"name": "River Ward","position": "Direct Sales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6467083,"base": 7477916,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 99,"name": "Toby Brooks","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 5482500,"base": 6841875,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 100,"name": "Wren Carter","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 1328125,"base": 1851042,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 101,"name": "Alex Johnson","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 5425000,"base": 8550125,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 102,"name": "Jordan Smith","position": "Project Sales Executive","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 9000000,"base": 12455000,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 103,"name": "Taylor Brown","position": "Telesales","dept": "SALES & BUSINESS DEVELOPMENT","dept_label": "Sales & BD","income": 6200000,"base": 8347000,"adj": 0,"status": "active","pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 104,"name": "Morgan Davis","position": "DevOps Engineer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 14687500,"base": 19245208,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 105,"name": "Casey Wilson","position": "Golang Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 22500000,"base": 34559531,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 106,"name": "Riley Anderson","position": "Tech Lead","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 40000000,"base": 65940000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 107,"name": "Avery Thomas","position": "Tech Lead","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 54000000,"base": 73860000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 108,"name": "Cameron Moore","position": "Mobile Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 25600000,"base": 40056000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 109,"name": "Jamie Taylor","position": "Web Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 49500000,"base": 49500000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 110,"name": "Quinn Martin","position": "Golang Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 11000000,"base": 14625000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 111,"name": "Sam Clark","position": "Sr. Golang Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 32000000,"base": 48560000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 112,"name": "Drew Lewis","position": "Mobile Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 29000000,"base": 47450313,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 113,"name": "Harper Walker","position": "Golang Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 22916667,"base": 29802500,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 114,"name": "Reese Hall","position": "Golang Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 11000000,"base": 15306250,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 115,"name": "Blake Allen","position": "Mobile Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 24000000,"base": 33330000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 116,"name": "Parker Young","position": "Mobile Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 24687500,"base": 31602500,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 117,"name": "Hayden King","position": "Web Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 28510417,"base": 29200417,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 118,"name": "Rowan Wright","position": "Web Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 14800000,"base": 14800000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 119,"name": "Emerson Scott","position": "","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 22932292,"base": 23712084,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 120,"name": "Finley Green","position": "Web Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 25000000,"base": 26040000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 121,"name": "Logan Baker","position": "Mobile Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 6720000,"base": 6720000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 122,"name": "Charlie Adams","position": "","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 2203125,"base": 2353125,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 123,"name": "Skyler Nelson","position": "Head of Innovation","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 70000000,"base": 90020000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 124,"name": "Kendall Hill","position": "Mobile Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 2000000,"base": 2000000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}},{"id": 125,"name": "Bailey Campbell","position": "Sr. Golang Developer","dept": "SYSTEM & ENGINEERING","dept_label": "System & Engineering","income": 35000000,"base": 59265000,"adj": 0,"status": "active","pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0}}];
-
-const CSV_STATE = [{"id": 1,"status": "active","adj": 0,"pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 2,"status": "active","adj": 0,"pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 3,"status": "active","adj": 0,"pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 4,"status": "active","adj": 0,"pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 5,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 6,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 7,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 8,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 9,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 10,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 11,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 12,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 13,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 14,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 15,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 16,"status": "active","adj": 0,"pl_line": "6.1 Staff - Customer Operation","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 17,"status": "active","adj": 0,"pl_line": "7.3 Staff - Human Resource","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 18,"status": "active","adj": 0,"pl_line": "7.3 Staff - Human Resource","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 19,"status": "active","adj": 130000000,"pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 20,"status": "active","adj": 120000000,"pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 50.0,"SBH_partner": 0,"HLB": 0,"BU3": 50.0,"CSS": 0},"_new": false},{"id": 21,"status": "active","adj": 0,"pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 22,"status": "active","adj": 0,"pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 23,"status": "active","adj": 0,"pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 24,"status": "active","adj": 10000000,"pl_line": "7.1 Staff - Management","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 25,"status": "active","adj": 0,"pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 26,"status": "active","adj": 0,"pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 27,"status": "active","adj": 0,"pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 28,"status": "active","adj": 0,"pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 29,"status": "active","adj": 0,"pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 30,"status": "active","adj": 0,"pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 31,"status": "active","adj": 0,"pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 32,"status": "active","adj": 0,"pl_line": "6.5 Staff - Marketing","alloc": {"SBH_own": 80.0,"SBH_partner": 0,"HLB": 0,"BU3": 20.0,"CSS": 0},"_new": false},{"id": 33,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 34,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 35,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 36,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 37,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 38,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 39,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 40,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 41,"status": "active","adj": 0,"pl_line": "7.4 Staff - Partnership","alloc": {"SBH_own": 0,"SBH_partner": 100.0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 42,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 43,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 44,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 45,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 46,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 47,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 48,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 49,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 50,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 51,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 52,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 53,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 54,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 55,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 56,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 57,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 58,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 59,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 60,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 61,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 62,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 63,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 64,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 65,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 66,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 67,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 68,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 69,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 70,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 71,"status": "active","adj": 0,"pl_line": "6.3 Staff - Product Development","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 72,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 73,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 74,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 75,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 76,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 77,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 78,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 79,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 80,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 81,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 82,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 83,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 84,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 85,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 86,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 87,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 88,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 89,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 90,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 91,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 92,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 93,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 94,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 95,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 96,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 97,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 98,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 99,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 100,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 101,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 102,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 103,"status": "active","adj": 0,"pl_line": "4.1 Staff cost — Salary","alloc": {"SBH_own": 100.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 104,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": false},{"id": 105,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 106,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 107,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 108,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 109,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 110,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 111,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 112,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 113,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 60.0,"SBH_partner": 0,"HLB": 40.0,"BU3": 0,"CSS": 0},"_new": false},{"id": 114,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 115,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 116,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 117,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 118,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 119,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 120,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 121,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 122,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 123,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 124,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 125,"status": "active","adj": 0,"pl_line": "6.4 Staff - Technology","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 100.0,"CSS": 0},"_new": false},{"id": 1780230000000,"status": "inactive","adj": 0,"pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": true,"name": "New Accountant 1","position": "nan","dept": "HR","dept_label": "HR","income": 0,"base": 39000000},{"id": 1780230000000,"status": "active","adj": 0,"pl_line": "7.2 Staff - Accounting & Finance","alloc": {"SBH_own": 0,"SBH_partner": 0,"HLB": 0,"BU3": 0,"CSS": 0},"_new": true,"name": "New Accountant 2","position": "nan","dept": "ACCOUNTING & FINANCE","dept_label": "Accounting & Finance","income": 0,"base": 26000000}];
-
-
-
-const BUS = [
-  {key:'SBH_own',     label:'SBH Own Channel',  short:'SBH-Own', cls:'bu1', thcls:'th-bu1', outcls:'th-out1'},
-  {key:'SBH_partner', label:'SBH Partnership',  short:'SBH-Ptn', cls:'bu2', thcls:'th-bu2', outcls:'th-out2'},
-  {key:'HLB',         label:'HLB',              short:'HLB',     cls:'bu3', thcls:'th-bu3', outcls:'th-out3'},
-  {key:'BU3',         label:'BU3 — FinanOne',   short:'BU3',     cls:'bu4', thcls:'th-bu4', outcls:'th-out4'},
-  {key:'CSS',         label:'Corp. Shared Svc', short:'CSS',     cls:'bu5', thcls:'th-bu5', outcls:'th-out5'},
-];
-const PL_LINES = [
-  '4.1 Staff cost — Salary','6.1 Staff - Customer Operation',
-  '6.3 Staff - Product Development','6.4 Staff - Technology',
-  '6.5 Staff - Marketing','7.1 Staff - Management',
-  '7.2 Staff - Accounting & Finance','7.3 Staff - Human Resource',
-  '7.4 Staff - Partnership',
-];
-const PL_COA_MAP = {
-  '4.1 Staff cost — Salary':          ['SBH_own','HLB','BU3'],
-  '6.1 Staff - Customer Operation':   ['SBH_own','HLB'],
-  '6.3 Staff - Product Development':  ['SBH_own','BU3'],
-  '6.4 Staff - Technology':           ['SBH_own','SBH_partner','HLB','BU3'],
-  '6.5 Staff - Marketing':            ['SBH_own','HLB','BU3'],
-  '7.1 Staff - Management':           ['SBH_own','BU3','CSS'],
-  '7.2 Staff - Accounting & Finance': ['SBH_own','BU3','CSS'],
-  '7.3 Staff - Human Resource':       ['SBH_own','BU3','CSS'],
-  '7.4 Staff - Partnership':          ['SBH_partner','BU3'],
+/* ============================================================
+   ►► DÁN LINK DEMO THẬT VÀO ĐÂY ◄◄
+   Sau khi up 9 file lên web / Lark / Google Drive, dán URL công khai
+   của từng bản vào đây. Để trống ('') thì nút "Mở demo" sẽ mờ đi.
+   (Với Google Drive: dùng link share "Anyone with the link",
+    đổi /view thành /preview để mở xem trực tiếp.)
+   ============================================================ */
+const DEMO_FOLDER='https://drive.google.com/drive/folders/1mw4gkO0rCSXfi_OjiebYYV0lpdRVPz4V?usp=drive_link';
+const DEMO_FILE_NAMES={
+ 'Bản 0a':'finan-staffcost-mapping-t5-coa.html',
+ 'Bản 0b':'finan_payroll_costcode_hc_forecast_report.html',
+ 'Bản 0c':'Finan_Staff_Cost_Planning_Simulator_T6_v03.html',
+ 'v1' :'finan-staffcost-simulator_1.html',
+ 'v7' :'finan-staffcost-simulator_7.html',
+ 'v15':'finan-staffcost-simulator_15.html',
+ 'v17':'finan-staffcost-simulator_17.html',
+ 'v19':'finan-staffcost-simulator_19.html',
+ 'v25':'Finan-staffcost-simulator_v25.html',
 };
-const DEPT_ORDER=['MANAGEMENT','ACCOUNTING & FINANCE','HR','CUSTOMER SERVICE & SUCCESS','MARKETING','PARTNERSHIP','PRODUCT MANAGEMENT','PRODUCT OPS','SALES & BUSINESS DEVELOPMENT','SYSTEM & ENGINEERING'];
-const DEPT_LABELS={'MANAGEMENT':'Management','ACCOUNTING & FINANCE':'Accounting & Finance','HR':'HR','CUSTOMER SERVICE & SUCCESS':'CS & Success','MARKETING':'Marketing','PARTNERSHIP':'Partnership','PRODUCT MANAGEMENT':'Product Management','PRODUCT OPS':'Product OPS','SALES & BUSINESS DEVELOPMENT':'Sales & BD','SYSTEM & ENGINEERING':'System & Engineering'};
-const DEPT_PL={'SALES & BUSINESS DEVELOPMENT':'4.1 Staff cost — Salary','CUSTOMER SERVICE & SUCCESS':'6.1 Staff - Customer Operation','PARTNERSHIP':'7.4 Staff - Partnership','PRODUCT MANAGEMENT':'6.3 Staff - Product Development','PRODUCT OPS':'6.3 Staff - Product Development','SYSTEM & ENGINEERING':'6.4 Staff - Technology','MARKETING':'6.5 Staff - Marketing','MANAGEMENT':'7.1 Staff - Management','ACCOUNTING & FINANCE':'7.2 Staff - Accounting & Finance','HR':'7.3 Staff - Human Resource'};
+const LINKS={
+ 'Bản 0a':'https://drive.google.com/file/d/1D0BHGxCPGWi0-KOp_AYPTVzZUcmCEVLN/preview',
+ 'Bản 0b':'https://drive.google.com/file/d/1XE72bf1lrNF8Jt40L_9-QFEj6Re7C2ZV/preview',
+ 'Bản 0c':'https://drive.google.com/file/d/1MTytweIn6MIXm0HyP2yrcJov5fu5aCcM/preview',
+ 'v1':'https://drive.google.com/file/d/1LVUDGQwT5Q9iFSSDEYvlIMnye5l9t_AO/preview',
+ 'v7':'https://drive.google.com/file/d/1JR34sdCkBsfrbuWCDbtknhOyOak0fOTR/preview',
+ 'v15':'https://drive.google.com/file/d/1xpzXIGEQVflgSkRFL4HdOILQTkmeBTLo/preview',
+ 'v17':'https://drive.google.com/file/d/1eFNR1XmWA1VKYUy8XcM6Ir55xxOC-Bxc/preview',
+ 'v19':'https://drive.google.com/file/d/11Zju4VvUkIhvA5tzMqfNRikrOI2wGHZX/preview',
+ 'v25':'https://drive.google.com/file/d/1ofzGFFol744fTwQ-9I0-GhYvv1fC6c8s/preview',
+};
 
-let persons = PERSONS_RAW.map(p=>({...p, alloc:{...p.alloc}}));
-
-// ── HELPERS ──
-const fmtMc = n => {if(!n||n===0)return'—';const v=n/1e6;return(v>=1?v.toFixed(1):v.toFixed(2))+'tr';};
-const fmtMl = n => n===0?'—':(n/1e6).toFixed(1)+'tr';
-const num = s => parseFloat(s)||0;
-function effectiveCost(p){ if(p.status==='inactive') return 0; return p.base + (p.adj||0); }
-function allocSum(p){ return BUS.reduce((s,b)=>s+num(p.alloc[b.key]),0); }
-function buCost(p,buKey){ return effectiveCost(p) * num(p.alloc[buKey]) / 100; }
-function getValidBUs(pl){ return PL_COA_MAP[pl]||BUS.map(b=>b.key); }
-function getAutoAlloc(pl){ const v=getValidBUs(pl); return v.length===1?v[0]:null; }
-function applyAutoAlloc(p){ const a=getAutoAlloc(p.pl_line); if(a) BUS.forEach(b=>{p.alloc[b.key]=b.key===a?100:0;}); }
-
-// ── TAB NAV ──
-function showTab(id, btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if(btn) btn.classList.add('active');
-  document.getElementById('toolbar').style.display = id==='simulator'?'flex':'none';
-  if(id==='summary') buildSummary();
-}
-
-// ── BUILD HEADER ──
-function buildHeader(){
-  const tr=document.createElement('tr');
-  const fixed=[
-    {l:'Nhân sự',cls:'left',style:'min-width:165px'},
-    {l:'P&L Line',cls:'left',style:'min-width:158px'},
-    {l:'Fixed\nIncome',cls:'',style:'min-width:76px',title:'Gross fixed salary tham chiếu'},
-    {l:'Base Cost\n(T5 incl.L13)',cls:'',style:'min-width:88px'},
-    {l:'Adj\n(M VND)',cls:'',style:'min-width:76px',title:'Lương trả nước ngoài / hình thức khác'},
-    {l:'Total Eff.Cost\n=Base+Adj',cls:'',style:'min-width:94px'},
-    {l:'Status',cls:'center',style:'min-width:68px'},
-    {l:'Del',cls:'center',style:'min-width:34px'},
-    {l:'Alloc\nSum',cls:'center',style:'min-width:50px'},
-  ];
-  fixed.forEach(f=>{
-    const th=document.createElement('th');
-    th.className=f.cls||''; th.style.cssText=f.style||'';
-    if(f.title) th.title=f.title;
-    th.innerHTML=f.l.replace('\n','<br>');
-    tr.appendChild(th);
-  });
-  BUS.forEach(b=>{
-    const th=document.createElement('th');
-    th.innerHTML=`${b.short}<br><span style="font-size:8px;opacity:.55">% alloc</span>`;
-    th.className=`${b.thcls} th-sep`; th.style.cssText='min-width:58px';
-    tr.appendChild(th);
-  });
-  BUS.forEach(b=>{
-    const th=document.createElement('th');
-    th.innerHTML=`${b.short}<br><span style="font-size:8px;opacity:.55">cost</span>`;
-    th.className=`${b.outcls} th-sep`; th.style.cssText='min-width:68px';
-    tr.appendChild(th);
-  });
-  document.getElementById('sim-thead').appendChild(tr);
-}
-
-// ── FILTER ──
-function getFiltered(){
-  const q=(document.getElementById('search')?.value||'').toLowerCase();
-  const dept=document.getElementById('filter-dept')?.value||'';
-  const status=document.getElementById('filter-status')?.value||'';
-  const pl=document.getElementById('filter-pl')?.value||'';
-  return persons.filter(p=>{
-    if(q&&!p.name.toLowerCase().includes(q)&&!p.position.toLowerCase().includes(q)) return false;
-    if(dept&&p.dept!==dept) return false;
-    if(status&&p.status!==status) return false;
-    if(pl&&p.pl_line!==pl) return false;
-    return true;
-  });
-}
-
-// ── BUILD TABLE ──
-function buildTable(){
-  const tbody=document.getElementById('sim-tbody'); tbody.innerHTML='';
-  const filtered=getFiltered();
-  const deptFiltered=document.getElementById('filter-dept')?.value||'';
-  const depts=deptFiltered?[deptFiltered]:DEPT_ORDER;
-  const numCols=9+BUS.length*2;
-
-  depts.forEach(dept=>{
-    const rows=filtered.filter(p=>p.dept===dept);
-    if(!rows.length) return;
-
-    // Dept header
-    const dhr=document.createElement('tr'); dhr.className='dept-hdr';
-    const deptLabel=DEPT_LABELS[dept]||dept;
-    const dActive=rows.filter(p=>p.status==='active');
-    dhr.innerHTML=`<td colspan="${numCols}">${deptLabel} <span style="color:var(--sub);font-size:9px;font-weight:400;font-family:var(--fm)">${rows.length} người · active: ${dActive.length} · ${fmtMl(dActive.reduce((s,p)=>s+effectiveCost(p),0))}</span></td>`;
-    tbody.appendChild(dhr);
-
-    rows.forEach(p=>{
-      const tr=document.createElement('tr');
-      tr.className='person-row'+(p.status==='inactive'?' inactive-row':'')+(p._new?' new-row':'');
-      tr.id=`row-${p.id}`;
-      const ec=effectiveCost(p);
-      const as=allocSum(p);
-      const asOver=as>100.01; const asOk=Math.abs(as-100)<0.01;
-      const validBUs=getValidBUs(p.pl_line);
-
-      // 1 Name
-      const tdN=document.createElement('td'); tdN.className='left';
-      tdN.innerHTML=`<div class="name-cell"><span class="name-main">${p.name}</span><span class="name-pos">${p.position||''}</span>${p._new?'<span class="name-new">✦ NEW T6</span>':''}</div>`;
-      tr.appendChild(tdN);
-
-      // 2 PL line
-      const tdPL=document.createElement('td'); tdPL.className='left';
-      const sel=document.createElement('select'); sel.className='pl-select';
-      PL_LINES.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=l;if(l===p.pl_line)o.selected=true;sel.appendChild(o);});
-      sel.onchange=e=>{p.pl_line=e.target.value;applyAutoAlloc(p);buildTable();updateStrip();saveState();};
-      tdPL.appendChild(sel); tr.appendChild(tdPL);
-
-      // 3 Fixed income
-      const tdInc=document.createElement('td');
-      tdInc.innerHTML=`<span style="font-family:var(--fm);font-size:11px;color:var(--dim)">${fmtMc(p.income||0)}</span>`;
-      tr.appendChild(tdInc);
-
-      // 4 Base
-      const tdBase=document.createElement('td');
-      tdBase.innerHTML=`<span style="font-family:var(--fm);font-size:11px;color:var(--sub)">${fmtMc(p.base)}</span>`;
-      tr.appendChild(tdBase);
-
-      // 5 Adj (M VND input)
-      const tdAdj=document.createElement('td');
-      const inp=document.createElement('input'); inp.className='inp-adj'; inp.type='number'; inp.placeholder='0'; inp.step='0.5';
-      inp.value=p.adj?+(p.adj/1e6).toFixed(2):'';
-      inp.oninput=e=>{p.adj=Math.round((parseFloat(e.target.value)||0)*1e6);refreshRow(p.id);updateStrip();saveState();};
-      tdAdj.appendChild(inp); tr.appendChild(tdAdj);
-
-      // 6 Total Eff Cost = Base + Adj
-      const tdEC=document.createElement('td'); tdEC.id=`ec-${p.id}`;
-      const ecColor=p.status==='inactive'?'var(--dim)':p.adj?'var(--teal)':'#fff';
-      tdEC.innerHTML=`<span style="font-family:var(--fm);font-size:11.5px;font-weight:500;color:${ecColor}" title="Base: ${fmtMc(p.base)} + Adj: ${fmtMc(p.adj||0)}">${fmtMc(ec)}</span>`;
-      tr.appendChild(tdEC);
-
-      // 7 Status
-      const tdS=document.createElement('td'); tdS.className='center';
-      const sbtn=document.createElement('button'); sbtn.className=`status-toggle ${p.status}`;
-      sbtn.textContent=p.status==='active'?'Active':'Inactive';
-      sbtn.onclick=()=>{p.status=p.status==='active'?'inactive':'active';buildTable();updateStrip();saveState();};
-      tdS.appendChild(sbtn); tr.appendChild(tdS);
-
-      // 8 Delete (new only)
-      const tdD=document.createElement('td'); tdD.className='center';
-      if(p._new){
-        const db=document.createElement('button'); db.className='del-btn'; db.textContent='✕'; db.title='Xoá nhân sự này';
-        db.onclick=()=>{persons=persons.filter(x=>x.id!==p.id);buildTable();updateStrip();saveState();};
-        tdD.appendChild(db);
-      }
-      tr.appendChild(tdD);
-
-      // 9 Alloc sum
-      const tdAS=document.createElement('td'); tdAS.className='center'; tdAS.id=`as-${p.id}`;
-      tdAS.innerHTML=`<span class="alloc-sum ${asOver?'over':asOk?'ok':'zero'}">${as.toFixed(0)}%</span>`;
-      tr.appendChild(tdAS);
-
-      // 10 BU alloc inputs
-      BUS.forEach((b,bi)=>{
-        const td=document.createElement('td'); if(bi===0) td.className='th-sep';
-        const isValid=validBUs.includes(b.key);
-        const ai=document.createElement('input');
-        ai.className=`inp-alloc ${b.cls}${asOver?' over':asOk?' full':''}${!isValid?' dim-bu':''}`;
-        ai.type='number'; ai.min='0'; ai.max='100'; ai.step='10'; // step 10%
-        ai.value=p.alloc[b.key]||''; ai.placeholder='0';
-        if(!isValid) ai.title=`${b.label} không trong COA của line này`;
-        ai.oninput=e=>{p.alloc[b.key]=parseFloat(e.target.value)||0;refreshRow(p.id);updateStrip();saveState();};
-        td.appendChild(ai); tr.appendChild(td);
-      });
-
-      // 11 BU output cost
-      BUS.forEach((b,bi)=>{
-        const td=document.createElement('td'); td.id=`out-${p.id}-${b.key}`;
-        if(bi===0) td.className='th-sep';
-        const isValid=validBUs.includes(b.key);
-        const cost=buCost(p,b.key);
-        const dimStyle=!isValid&&cost===0?'opacity:.2':'';
-        td.innerHTML=`<span class="out-val ${cost>0?b.cls+' has-val':''}" style="${dimStyle}">${cost>0?fmtMc(cost):'—'}</span>`;
-        tr.appendChild(td);
-      });
-
-      tbody.appendChild(tr);
-    });
-
-    // Dept subtotal
-    const stId=`st-${dept.replace(/\W/g,'_')}`;
-    const stRow=document.createElement('tr'); stRow.className='dept-total'; stRow.id=stId;
-    const totA=rows.filter(p=>p.status==='active');
-    const dEC=totA.reduce((s,p)=>s+effectiveCost(p),0);
-    const dAdj=totA.reduce((s,p)=>s+(p.adj||0),0);
-    let stHtml=`<td>↳ ${deptLabel} SUBTOTAL (${totA.length} active)</td>
-      <td></td>
-      <td style="color:var(--dim);font-family:var(--fm)">${fmtMc(totA.reduce((s,p)=>s+(p.income||0),0))}</td>
-      <td style="font-family:var(--fm)"><span data-st="base">${fmtMc(totA.reduce((s,p)=>s+p.base,0))}</span></td>
-      <td style="font-family:var(--fm);color:${dAdj?'var(--amber)':'var(--dim)'}"><span data-st="adj">${dAdj?fmtMc(dAdj):'—'}</span></td>
-      <td><span data-st="ec">${fmtMc(dEC)}</span></td>
-      <td></td><td></td><td></td>`;
-    BUS.forEach(()=>stHtml+='<td></td>');
-    BUS.forEach((b,bi)=>{
-      const bT=totA.reduce((s,p)=>s+buCost(p,b.key),0);
-      stHtml+=`<td${bi===0?' class="th-sep"':''}><span data-st="${b.key}" style="color:var(--${b.cls});font-family:var(--fm)">${bT>0?fmtMc(bT):'—'}</span></td>`;
-    });
-    stRow.innerHTML=stHtml; tbody.appendChild(stRow);
-  });
-
-  // Grand total
-  const active=persons.filter(p=>p.status==='active');
-  const gEC=active.reduce((s,p)=>s+effectiveCost(p),0);
-  const gBase=active.reduce((s,p)=>s+p.base,0);
-  const gAdj=active.reduce((s,p)=>s+(p.adj||0),0);
-  const gtr=document.createElement('tr'); gtr.className='grand-total'; gtr.id='grand-total-row';
-  let gHtml=`<td>GRAND TOTAL — ${active.length} ACTIVE / ${persons.length} TOTAL</td>
-    <td></td>
-    <td style="color:var(--dim);font-family:var(--fm)">${fmtMc(active.reduce((s,p)=>s+(p.income||0),0))}</td>
-    <td style="font-family:var(--fm)"><span data-gt="base">${fmtMc(gBase)}</span></td>
-    <td style="font-family:var(--fm);color:var(--amber)"><span data-gt="adj">${gAdj?fmtMc(gAdj):'—'}</span></td>
-    <td style="font-family:var(--fm);font-size:13px;color:var(--gold2)"><span data-gt="ec">${fmtMc(gEC)}</span></td>
-    <td></td><td></td><td></td>`;
-  BUS.forEach(()=>gHtml+='<td></td>');
-  BUS.forEach((b,bi)=>{
-    const bT=active.reduce((s,p)=>s+buCost(p,b.key),0);
-    gHtml+=`<td${bi===0?' class="th-sep"':''}><span data-gt="${b.key}" style="color:var(--${b.cls});font-weight:700;font-family:var(--fm);font-size:12px">${bT>0?fmtMc(bT):'—'}</span></td>`;
-  });
-  gtr.innerHTML=gHtml; tbody.appendChild(gtr);
-}
-
-// ── REFRESH ROW + SUBTOTALS ──
-function refreshRow(id){
-  const p=persons.find(x=>x.id===id); if(!p) return;
-  const ec=effectiveCost(p); const as=allocSum(p);
-  const asOver=as>100.01; const asOk=Math.abs(as-100)<0.01;
-
-  const ecEl=document.getElementById(`ec-${id}`);
-  if(ecEl){
-    const ecColor=p.status==='inactive'?'var(--dim)':p.adj?'var(--teal)':'#fff';
-    ecEl.innerHTML=`<span style="font-family:var(--fm);font-size:11.5px;font-weight:500;color:${ecColor}" title="Base: ${fmtMc(p.base)} + Adj: ${fmtMc(p.adj||0)}">${fmtMc(ec)}</span>`;
+/* ---------- Lego SVG builder (cumulative parts) ---------- */
+const C={body:'#C0392B',roof:'#A93226',tire:'#1F2933',rim:'#3A4757',hub:'#7A8AA0',
+  axle:'#6F8198',stud:'#E8B84B',dark:'#34404D',steel:'#9FB0C2',gold:'#E8B84B',green:'#5BBE8A'};
+function wheels(big){const r=big?17:15;const y1=96,y2=124,x1=34,x2=196;
+  let s='';[[x1,y1],[x2,y1],[x1,y2],[x2,y2]].forEach(([x,y])=>{
+    s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${C.tire}" stroke="${C.rim}" stroke-width="3.5"/><circle cx="${x}" cy="${y}" r="${big?6:5}" fill="${C.hub}"/>`;});
+  return s;}
+function axles(){return `<rect x="22" y="93" width="186" height="5" rx="2.5" fill="${C.axle}"/><rect x="22" y="121" width="186" height="5" rx="2.5" fill="${C.axle}"/>`;}
+function studs(xs,y){return xs.map(x=>`<circle cx="${x}" cy="${y}" r="6" fill="${C.stud}"/>`).join('');}
+/* each stage returns full inner SVG markup */
+function lego(stage){
+  let p='';
+  const big = stage>=3;
+  const bodyX = 46, bodyW = big?148:120, bodyY=70, bodyH= stage>=3?40:34;
+  /* stage 4+ : separate axle modules instead of single long axles */
+  if(stage>=4){
+    p += `<rect x="22" y="116" width="52" height="15" rx="4" fill="${C.dark}"/>`;
+    p += `<rect x="156" y="116" width="52" height="15" rx="4" fill="${C.dark}"/>`;
+    p += `<rect x="74" y="120" width="82" height="5" rx="2.5" fill="${C.axle}"/>`;
+    p += axles().replace(/<rect[^>]*y="121"[^>]*\/>/,''); /* keep top axle only */
+    p = `<rect x="22" y="93" width="186" height="5" rx="2.5" fill="${C.axle}"/>` + 
+        `<rect x="22" y="116" width="52" height="15" rx="4" fill="${C.dark}"/>`+
+        `<rect x="156" y="116" width="52" height="15" rx="4" fill="${C.dark}"/>`+
+        `<rect x="74" y="120" width="82" height="5" rx="2.5" fill="${C.axle}"/>`;
+  } else {
+    p = axles();
   }
-  const asEl=document.getElementById(`as-${id}`);
-  if(asEl) asEl.innerHTML=`<span class="alloc-sum ${asOver?'over':asOk?'ok':'zero'}">${as.toFixed(0)}%</span>`;
-
-  BUS.forEach(b=>{
-    const el=document.getElementById(`out-${id}-${b.key}`);
-    if(el){const cost=buCost(p,b.key);el.innerHTML=`<span class="out-val ${cost>0?b.cls+' has-val':''}">${cost>0?fmtMc(cost):'—'}</span>`;}
-  });
-
-  // Dept subtotal
-  const stEl=document.getElementById(`st-${p.dept.replace(/\W/g,'_')}`);
-  if(stEl){
-    const deptP=persons.filter(x=>x.dept===p.dept&&x.status==='active');
-    const dEC=deptP.reduce((s,x)=>s+effectiveCost(x),0);
-    const dAdj=deptP.reduce((s,x)=>s+(x.adj||0),0);
-    const dBase=deptP.reduce((s,x)=>s+x.base,0);
-    stEl.querySelectorAll('[data-st]').forEach(c=>{
-      const r=c.getAttribute('data-st');
-      if(r==='base') c.textContent=fmtMc(dBase);
-      else if(r==='adj'){c.textContent=dAdj?fmtMc(dAdj):'—';c.parentElement.style.color=dAdj?'var(--amber)':'var(--dim)';}
-      else if(r==='ec') c.textContent=fmtMc(dEC);
-      else{const bT=deptP.reduce((s,x)=>s+buCost(x,r),0);c.textContent=bT>0?fmtMc(bT):'—';}
-    });
+  /* body */
+  if(stage>=5){
+    /* hollow cabin: C-shape body */
+    const x=bodyX,w=bodyW,y=bodyY,h=bodyH;
+    p += `<path d="M${x} ${y} h${w} a5 5 0 0 1 5 5 v10 h-30 v${h-12} h-${w-50} v-${h-12} h-30 v-10 a5 5 0 0 1 5 -5 z" fill="${C.body}"/>`;
+    p += `<rect x="${x+30}" y="${y+5}" width="${w-60}" height="${h-7}" fill="#2C3A47"/>`;
+  } else {
+    p += `<rect x="${bodyX}" y="${bodyY}" width="${bodyW}" height="${bodyH}" rx="5" fill="${C.body}"/>`;
   }
-  // Grand total
-  const gEl=document.getElementById('grand-total-row');
-  if(gEl){
-    const act=persons.filter(x=>x.status==='active');
-    const gEC=act.reduce((s,x)=>s+effectiveCost(x),0);
-    const gAdj=act.reduce((s,x)=>s+(x.adj||0),0);
-    const gBase=act.reduce((s,x)=>s+x.base,0);
-    gEl.querySelectorAll('[data-gt]').forEach(c=>{
-      const r=c.getAttribute('data-gt');
-      if(r==='base') c.textContent=fmtMc(gBase);
-      else if(r==='adj') c.textContent=gAdj?fmtMc(gAdj):'—';
-      else if(r==='ec') c.textContent=fmtMc(gEC);
-      else{const bT=act.reduce((s,x)=>s+buCost(x,r),0);c.textContent=bT>0?fmtMc(bT):'—';}
-    });
+  /* studs on top (stage1 only, before roof) */
+  if(stage===1){ p += studs([70,100,130,160],bodyY); }
+  /* roof from stage 2 — always solid so it never vanishes */
+  if(stage>=2){
+    const rx1=bodyX+20, rx2=bodyX+bodyW-20, ry=bodyY;
+    p += `<path d="M${rx1} ${ry} L${rx1+18} ${ry-22} L${rx2-18} ${ry-22} L${rx2} ${ry} Z" fill="${C.roof}"/>`;
+    if(stage<5) p += studs([bodyX+18, bodyX+bodyW-18], bodyY);
   }
-}
-
-// ── STRIP ──
-function updateStrip(){
-  const active=persons.filter(p=>p.status==='active');
-  const gEC=active.reduce((s,p)=>s+effectiveCost(p),0);
-  const gBase=active.reduce((s,p)=>s+p.base,0);
-  const gAdj=active.reduce((s,p)=>s+(p.adj||0),0);
-  const inactive=persons.filter(p=>p.status==='inactive').length;
-  const allocated=active.filter(p=>Math.abs(allocSum(p)-100)<0.5).length;
-  const buTotals=BUS.map(b=>active.reduce((s,p)=>s+buCost(p,b.key),0));
-  const totalAllocated=buTotals.reduce((s,v)=>s+v,0);
-  const strip=document.getElementById('strip');
-  const kpis=[
-    {lbl:'Total Cost Active',val:fmtMl(gEC),sub:`${active.length} nhân sự`,cls:''},
-    {lbl:'Base (T5)',val:fmtMl(gBase),sub:'incl. Lương 13',cls:''},
-    {lbl:'Adj. thêm',val:gAdj?fmtMl(gAdj):'—',sub:'Lương khác',cls:gAdj?'teal':''},
-    {lbl:'Inactive',val:inactive,sub:'Không tính T6',cls:inactive?'red':''},
-    {lbl:'Alloc 100%',val:`${allocated}/${active.length}`,sub:'hoàn thiện',cls:allocated===active.length?'green':''},
-    {lbl:'Allocated cost',val:fmtMl(totalAllocated),sub:`${gEC?((totalAllocated/gEC)*100).toFixed(0):0}% tổng`,cls:'teal'},
-    ...BUS.map((b,i)=>({lbl:b.short,val:fmtMl(buTotals[i]),sub:b.label,cls:['','','','',''][i]})),
-  ];
-  strip.innerHTML=kpis.map(k=>`<div class="kpi"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-val ${k.cls}">${k.val}</div><div class="kpi-sub">${k.sub}</div></div><div style="width:1px;background:var(--border);flex-shrink:0"></div>`).join('').replace(/<div style[^>]+><\/div>$/,'');
-}
-
-// ── SUMMARY SHEET ──
-function buildSummary(){
-  const active=persons.filter(p=>p.status==='active');
-  const wrap=document.getElementById('summary-content');
-
-  // 1. By BU/Segment
-  const buTotals=BUS.map(b=>({...b,total:active.reduce((s,p)=>s+buCost(p,b.key),0),hc:active.filter(p=>p.alloc[b.key]>0).length}));
-  const buGrand=buTotals.reduce((s,b)=>s+b.total,0);
-  const gEC=active.reduce((s,p)=>s+effectiveCost(p),0);
-
-  // 2. By P&L Line
-  const plTotals=PL_LINES.map(l=>{
-    const lp=active.filter(p=>p.pl_line===l);
-    const total=lp.reduce((s,p)=>s+effectiveCost(p),0);
-    const allocated=lp.reduce((s,p)=>s+BUS.reduce((ss,b)=>ss+buCost(p,b.key),0),0);
-    return {l2:l, hc:lp.length, total, allocated, unalloc:total-allocated};
-  });
-
-  // 3. Cross table: PL Line × BU
-  const crossData={};
-  PL_LINES.forEach(l=>{crossData[l]={};BUS.forEach(b=>{crossData[l][b.key]=active.filter(p=>p.pl_line===l).reduce((s,p)=>s+buCost(p,b.key),0);});});
-
-  // 4. Drill-down data: BU → PL Line → persons
-  const drillData=BUS.map(b=>{
-    const plGroups=PL_LINES.map(l=>{
-      const pp=active.filter(p=>p.pl_line===l&&p.alloc[b.key]>0);
-      const cost=pp.reduce((s,p)=>s+buCost(p,b.key),0);
-      return{l2:l,cost,persons:pp.map(p=>({name:p.name,position:p.position,dept:DEPT_LABELS[p.dept]||p.dept,ec:effectiveCost(p),pct:p.alloc[b.key]||0,cost:buCost(p,b.key)})).sort((a,b)=>b.cost-a.cost)};
-    }).filter(g=>g.cost>0);
-    return{...b,plGroups,buTotal:plGroups.reduce((s,g)=>s+g.cost,0)};
-  }).filter(b=>b.buTotal>0);
-
-  wrap.innerHTML=`
-  <div>
-    <div class="sec-title">Chi phí theo BU / Segment</div>
-    <div class="sum-box">
-      <table class="sum-tbl">
-        <thead><tr>
-          <th>BU / Segment</th>
-          <th>Cost (tr)</th>
-          <th>% Tổng EC</th>
-          <th>Nhân sự</th>
-          <th>Avg/người</th>
-        </tr></thead>
-        <tbody>
-          ${buTotals.map(b=>`<tr>
-            <td><span style="display:inline-block;width:8px;height:8px;background:var(--${b.cls});border-radius:2px;margin-right:6px;vertical-align:middle"></span>${b.label}</td>
-            <td style="color:var(--${b.cls});font-weight:600">${fmtMl(b.total)}</td>
-            <td style="color:var(--sub)">${gEC?(b.total/gEC*100).toFixed(1):0}%</td>
-            <td>${b.hc}</td>
-            <td style="color:var(--sub)">${b.hc?fmtMl(b.total/b.hc):'—'}</td>
-          </tr>`).join('')}
-          <tr class="sum-total">
-            <td>TOTAL ALLOCATED</td>
-            <td>${fmtMl(buGrand)}</td>
-            <td>${gEC?(buGrand/gEC*100).toFixed(1):0}%</td>
-            <td>—</td><td>—</td>
-          </tr>
-          <tr>
-            <td style="color:var(--amber)">Chưa phân bổ</td>
-            <td style="color:var(--amber)">${fmtMl(gEC-buGrand)}</td>
-            <td style="color:var(--amber)">${gEC?((gEC-buGrand)/gEC*100).toFixed(1):0}%</td>
-            <td>—</td><td>—</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div>
-    <div class="sec-title">Chi phí theo P&L Line</div>
-    <div class="sum-box">
-      <table class="sum-tbl">
-        <thead><tr>
-          <th>P&L L2 Line</th>
-          <th>HC</th>
-          <th>Total Cost</th>
-          <th>Allocated</th>
-          <th>Unalloc</th>
-          <th>% Total</th>
-        </tr></thead>
-        <tbody>
-          ${plTotals.map(row=>`<tr>
-            <td>${row.l2}</td>
-            <td style="color:var(--sub)">${row.hc}</td>
-            <td style="color:#fff;font-weight:600">${fmtMl(row.total)}</td>
-            <td style="color:var(--teal)">${fmtMl(row.allocated)}</td>
-            <td style="color:${row.unalloc>0?'var(--amber)':'var(--green)'}">${fmtMl(row.unalloc)}</td>
-            <td style="color:var(--sub)">${gEC?(row.total/gEC*100).toFixed(1):0}%</td>
-          </tr>`).join('')}
-          <tr class="sum-total">
-            <td>GRAND TOTAL</td>
-            <td>${active.length}</td>
-            <td>${fmtMl(gEC)}</td>
-            <td>${fmtMl(buGrand)}</td>
-            <td style="color:${(gEC-buGrand)>0?'var(--amber)':'var(--green)'}">${fmtMl(gEC-buGrand)}</td>
-            <td>100%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div>
-    <div class="sec-title">Cross Table: P&L Line × BU / Segment (triệu VND)</div>
-    <div class="sum-box">
-      <table class="sum-tbl">
-        <thead><tr>
-          <th>P&L Line</th>
-          ${BUS.map(b=>`<th style="color:var(--${b.cls})">${b.short}</th>`).join('')}
-          <th>Total</th>
-        </tr></thead>
-        <tbody>
-          ${PL_LINES.map(l=>{
-            const rowTotal=BUS.reduce((s,b)=>s+crossData[l][b.key],0);
-            const lp=active.filter(p=>p.pl_line===l);
-            const lineTotal=lp.reduce((s,p)=>s+effectiveCost(p),0);
-            return`<tr>
-              <td>${l}</td>
-              ${BUS.map(b=>{const v=crossData[l][b.key];const vb=PL_COA_MAP[l]?.includes(b.key);return`<td style="color:var(--${b.cls});${!vb?'opacity:.35':''}" title="${!vb?'Ngoài COA':''}">${v>0?fmtMl(v):'—'}</td>`}).join('')}
-              <td style="color:${rowTotal<lineTotal*0.99?'var(--amber)':'var(--gold2)'};font-weight:600">${fmtMl(rowTotal)}${rowTotal<lineTotal*0.99?`<span style="font-size:9px;color:var(--amber)"> /${fmtMl(lineTotal)}</span>`:''}</td>
-            </tr>`;
-          }).join('')}
-          <tr class="sum-total">
-            <td>TOTAL</td>
-            ${BUS.map(b=>`<td style="color:var(--${b.cls});font-weight:700">${fmtMl(buTotals.find(x=>x.key===b.key)?.total||0)}</td>`).join('')}
-            <td>${fmtMl(buGrand)}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="note-box">* Ô mờ = segment ngoài COA của P&L line đó · Total < Line Total = phần chưa được phân bổ</div>
-  </div>
-
-  <div>
-    <div class="sec-title">Drill-down: BU / Segment → P&L Line → Nhân sự</div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap" id="drill-bu-tabs">
-      ${drillData.map((b,i)=>`<button onclick="showDrill('${b.key}')" id="dtab-${b.key}"
-        style="padding:5px 14px;border-radius:3px;border:1px solid var(--${b.cls})44;background:${i===0?`var(--${b.cls})`:'transparent'};color:${i===0?'#080E18':`var(--${b.cls})`};font-family:var(--fm);font-size:11px;font-weight:700;cursor:pointer">
-        ${b.label} · ${fmtMl(b.buTotal)}
-      </button>`).join('')}
-    </div>
-    <div id="drill-content"></div>
-  </div>`;
-
-  // Render first BU drill-down
-  if(drillData.length) showDrill(drillData[0].key);
-
-  function showDrill(buKey){
-    // Update tab styles
-    drillData.forEach(b=>{
-      const tab=document.getElementById('dtab-'+b.key);
-      if(!tab) return;
-      if(b.key===buKey){tab.style.background=`var(--${b.cls})`;tab.style.color='#080E18';}
-      else{tab.style.background='transparent';tab.style.color=`var(--${b.cls})`;}
-    });
-
-    const bu=drillData.find(b=>b.key===buKey); if(!bu) return;
-    const el=document.getElementById('drill-content'); if(!el) return;
-
-    el.innerHTML=`<div class="sum-box">
-      <table class="sum-tbl" style="font-size:11.5px">
-        <thead>
-          <tr style="background:rgba(${bu.cls==='bu1'?'41,196,176':bu.cls==='bu2'?'155,114,232':bu.cls==='bu3'?'74,158,232':bu.cls==='bu4'?'232,184,75':'224,85,85'},.08)">
-            <th style="text-align:left;min-width:200px">Nhân sự</th>
-            <th style="text-align:left;min-width:160px">P&L Line</th>
-            <th style="text-align:left;min-width:120px">Phòng ban</th>
-            <th style="text-align:left;min-width:140px">Chức danh</th>
-            <th>Eff. Cost</th>
-            <th>Alloc %</th>
-            <th style="color:var(--${bu.cls})">Cost → ${bu.short}</th>
-            <th>% BU Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${bu.plGroups.map(g=>`
-            <tr style="background:rgba(44,74,110,.6)">
-              <td colspan="6" style="font-family:var(--fm);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;padding:8px 10px;border-top:1px solid rgba(200,169,110,.2)">${g.l2}</td>
-              <td style="color:var(--${bu.cls});font-weight:700;font-family:var(--fm)">${fmtMl(g.cost)}</td>
-              <td style="color:var(--sub);font-family:var(--fm)">${bu.buTotal?(g.cost/bu.buTotal*100).toFixed(1):0}%</td>
-            </tr>
-            ${g.persons.map((p,pi)=>`
-            <tr style="${pi%2===0?'':'background:rgba(255,255,255,.015)'}">
-              <td style="color:#fff;font-weight:600;padding-left:20px">${p.name}</td>
-              <td style="color:var(--sub);font-size:10px">${g.l2}</td>
-              <td style="color:var(--sub);font-size:10px">${p.dept}</td>
-              <td style="color:var(--dim);font-size:10px">${p.position||'—'}</td>
-              <td style="font-family:var(--fm);color:var(--text)">${fmtMl(p.ec)}</td>
-              <td style="font-family:var(--fm);color:var(--${bu.cls})">${p.pct}%</td>
-              <td style="font-family:var(--fm);color:var(--${bu.cls});font-weight:600">${fmtMl(p.cost)}</td>
-              <td style="color:var(--sub);font-family:var(--fm)">${bu.buTotal?(p.cost/bu.buTotal*100).toFixed(1):0}%</td>
-            </tr>`).join('')}
-            <tr style="background:rgba(44,74,110,.3)">
-              <td colspan="6" style="color:var(--gold);font-family:var(--fm);font-size:10px;padding-left:20px">Subtotal ${g.l2} · ${g.persons.length} người</td>
-              <td style="color:var(--gold);font-family:var(--fm);font-weight:700">${fmtMl(g.cost)}</td>
-              <td style="color:var(--sub);font-family:var(--fm)">${bu.buTotal?(g.cost/bu.buTotal*100).toFixed(1):0}%</td>
-            </tr>
-          `).join('')}
-          <tr style="background:rgba(200,169,110,.08);border-top:2px solid rgba(200,169,110,.3)">
-            <td colspan="6" style="font-family:var(--fh);font-weight:700;color:var(--gold2);font-size:12px">TOTAL ${bu.label}</td>
-            <td style="font-family:var(--fm);font-weight:700;color:var(--gold2);font-size:13px">${fmtMl(bu.buTotal)}</td>
-            <td style="color:var(--gold2);font-family:var(--fm)">100%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>`;
+  /* wings from stage 6 */
+  if(stage>=6){
+    p += `<rect x="14" y="58" width="10" height="18" rx="2" fill="${C.dark}"/>`;
+    p += `<rect x="6" y="52" width="40" height="7" rx="3" fill="${C.gold}"/>`; /* rear spoiler */
+    p += `<rect x="${bodyX+bodyW-2}" y="84" width="34" height="6" rx="3" fill="${C.gold}"/>`; /* front splitter */
   }
-}
-
-
-
-// ── FILTER ──
-function filterTable(){buildTable();updateStrip();}
-
-// ── RESET ALLOC ──
-function resetAlloc(){
-  if(!confirm('Reset toàn bộ % phân bổ?')) return;
-  persons.forEach(p=>{BUS.forEach(b=>{p.alloc[b.key]=0;});});
-  buildTable();updateStrip();saveState();
-}
-
-// ── MODAL ──
-function openModal(){document.getElementById('modal').classList.add('open');}
-function closeModal(){document.getElementById('modal').classList.remove('open');}
-function autoCalcBase(){
-  const g=parseFloat(document.getElementById('new-gross').value)||0;
-  document.getElementById('new-base').value=g>0?(g*1.30).toFixed(1):'';
-}
-function addPerson(){
-  const name=document.getElementById('new-name').value.trim();
-  if(!name){alert('Nhập tên nhân sự');return;}
-  const dept=document.getElementById('new-dept').value;
-  const baseM=parseFloat(document.getElementById('new-base').value)||0;
-  if(!baseM){alert('Nhập Gross Salary để tính Base');return;}
-  const np={
-    id:Date.now(), name, position:document.getElementById('new-position').value,
-    dept, dept_label:DEPT_LABELS[dept]||dept,
-    income:Math.round((parseFloat(document.getElementById('new-gross').value)||0)*1e6),
-    base:Math.round(baseM*1e6),
-    adj:Math.round((parseFloat(document.getElementById('new-adj').value)||0)*1e6),
-    status:'active', pl_line:document.getElementById('new-pl').value,
-    alloc:{SBH_own:0,SBH_partner:0,HLB:0,BU3:0,CSS:0}, _new:true,
-  };
-  applyAutoAlloc(np);
-  persons.push(np);
-  closeModal();
-  ['new-name','new-position','new-gross','new-base','new-adj'].forEach(id=>document.getElementById(id).value='');
-  buildTable();updateStrip();saveState();
-}
-
-// ── LOCAL STORAGE ──
-const LS_KEY='finan_sim_t6_v19_anonymized_v1';
-function saveState(){
-  try{
-    const snap=persons.map(p=>({id:p.id,status:p.status,adj:p.adj,pl_line:p.pl_line,alloc:{...p.alloc},_new:p._new||false,...(p._new?{name:p.name,position:p.position,dept:p.dept,dept_label:p.dept_label,income:p.income,base:p.base}:{})}));
-    localStorage.setItem(LS_KEY,JSON.stringify({ts:Date.now(),persons:snap}));
-    const ind=document.getElementById('save-indicator');
-    if(ind){ind.textContent='✓ Saved';ind.style.color='var(--green)';setTimeout(()=>{ind.textContent='Auto-saved';ind.style.color='var(--dim)';},1500);}
-  }catch(e){console.warn('Save failed',e);}
-}
-function loadState(){
-  try{
-    const raw=localStorage.getItem(LS_KEY); if(!raw) return false;
-    const saved=JSON.parse(raw); if(!saved?.persons?.length) return false;
-    saved.persons.forEach(s=>{
-      if(s._new){
-        if(!persons.find(p=>p.id===s.id)) persons.push({id:s.id,name:s.name,position:s.position||'',dept:s.dept,dept_label:s.dept_label,income:s.income||0,base:s.base,adj:s.adj||0,status:s.status,pl_line:s.pl_line,alloc:{...s.alloc},_new:true});
-      } else {
-        const p=persons.find(x=>x.id===s.id);
-        if(p){p.status=s.status;p.adj=s.adj||0;p.pl_line=s.pl_line;p.alloc={...s.alloc};}
-      }
-    });
-    return true;
-  }catch(e){return false;}
-}
-function clearSavedState(){
-  if(!confirm('Xoá toàn bộ dữ liệu đã lưu và reset về T5 gốc?')) return;
-  localStorage.removeItem(LS_KEY);
-  persons=PERSONS_RAW.map(p=>({...p,alloc:{...p.alloc}}));
-  buildTable();updateStrip();
-}
-
-// ── EXPORT ──
-function exportCSV(){
-  const h=['ID','Name','Position','Dept','P&L Line','Status','Fixed Income','Base (VND)','Adj (VND)','Effective Cost (VND)',...BUS.map(b=>`${b.label} % Alloc`),...BUS.map(b=>`${b.label} Cost (VND)`)];
-  const rows=persons.map(p=>[p.id,p.name,p.position,p.dept,p.pl_line,p.status,p.income||0,p.base,p.adj||0,effectiveCost(p),...BUS.map(b=>p.alloc[b.key]||0),...BUS.map(b=>Math.round(buCost(p,b.key)))]);
-  const csv=[h,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='finan_staffcost_t6.csv';a.click();
-}
-function exportJSON(){
-  const active=persons.filter(p=>p.status==='active');
-  const data={meta:{period:'T6-2026',exported:new Date().toISOString()},
-    summary:{total_persons:persons.length,active:active.length,total_effective_cost:active.reduce((s,p)=>s+effectiveCost(p),0),
-      by_bu:Object.fromEntries(BUS.map(b=>[b.label,active.reduce((s,p)=>s+buCost(p,b.key),0)])),
-      by_pl_line:Object.fromEntries(PL_LINES.map(l=>[l,active.filter(p=>p.pl_line===l).reduce((s,p)=>s+effectiveCost(p),0)]))},
-    persons:persons.map(p=>({id:p.id,name:p.name,position:p.position,dept:p.dept,pl_line:p.pl_line,status:p.status,income:p.income||0,base_cost:p.base,adjustment:p.adj||0,effective_cost:effectiveCost(p),allocations:Object.fromEntries(BUS.map(b=>[b.key,{pct:p.alloc[b.key]||0,amount:Math.round(buCost(p,b.key))}]))}))};
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='finan_staffcost_t6.json';a.click();
-}
-
-
-// ── EXPORT SUMMARY CSV ──
-function exportSummaryCSV(){
-  const active=persons.filter(p=>p.status==='active');
-  const gEC=active.reduce((s,p)=>s+effectiveCost(p),0);
-  const buTotals=BUS.map(b=>({...b,total:active.reduce((s,p)=>s+buCost(p,b.key),0),hc:active.filter(p=>p.alloc[b.key]>0).length}));
-  const buGrand=buTotals.reduce((s,b)=>s+b.total,0);
-  const s1=[['=== SUMMARY BY BU/SEGMENT ==='],['BU/Segment','Cost (VND)','Cost (tr)','% Total EC','HC'],
-    ...buTotals.map(b=>[b.label,b.total,(b.total/1e6).toFixed(1),(gEC?(b.total/gEC*100).toFixed(1):'0')+'%',b.hc]),
-    ['TOTAL ALLOCATED',buGrand,(buGrand/1e6).toFixed(1),(gEC?(buGrand/gEC*100).toFixed(1):'0')+'%',''],
-    ['Unallocated',gEC-buGrand,((gEC-buGrand)/1e6).toFixed(1),(gEC?((gEC-buGrand)/gEC*100).toFixed(1):'0')+'%','']];
-  const s2=[[''],['=== SUMMARY BY P&L LINE ==='],['P&L Line','HC','Total Cost (VND)','Total (tr)','Allocated (tr)','Unalloc (tr)','% Total'],
-    ...PL_LINES.map(l=>{const lp=active.filter(p=>p.pl_line===l);const tot=lp.reduce((s,p)=>s+effectiveCost(p),0);const alloc=lp.reduce((s,p)=>s+BUS.reduce((ss,b)=>ss+buCost(p,b.key),0),0);return[l,lp.length,tot,(tot/1e6).toFixed(1),(alloc/1e6).toFixed(1),((tot-alloc)/1e6).toFixed(1),(gEC?(tot/gEC*100).toFixed(1):'0')+'%'];}),
-    ['TOTAL',active.length,gEC,(gEC/1e6).toFixed(1),(buGrand/1e6).toFixed(1),((gEC-buGrand)/1e6).toFixed(1),'100%']];
-  const s3=[[''],['=== CROSS TABLE: P&L LINE x BU/SEGMENT (tr VND) ==='],['P&L Line',...BUS.map(b=>b.label),'Line Total (tr)','EC Total (tr)','Unalloc (tr)'],
-    ...PL_LINES.map(l=>{const lp=active.filter(p=>p.pl_line===l);const lineEC=lp.reduce((s,p)=>s+effectiveCost(p),0);const buVals=BUS.map(b=>lp.reduce((s,p)=>s+buCost(p,b.key),0));const rowTotal=buVals.reduce((s,v)=>s+v,0);return[l,...buVals.map(v=>(v/1e6).toFixed(1)),(rowTotal/1e6).toFixed(1),(lineEC/1e6).toFixed(1),((lineEC-rowTotal)/1e6).toFixed(1)];}),
-    ['TOTAL',...BUS.map(b=>(buTotals.find(x=>x.key===b.key)?.total||0)/1e6).map(v=>v.toFixed(1)),(buGrand/1e6).toFixed(1),(gEC/1e6).toFixed(1),((gEC-buGrand)/1e6).toFixed(1)]];
-  const csv=[...s1,...s2,...s3].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='finan_staffcost_t6_summary.csv';a.click();
-}
-
-// ── INIT ──
-buildHeader();
-const hadSaved=loadState();
-if(!hadSaved){
-  CSV_STATE.forEach(s=>{
-    if(s._new){
-      if(!persons.find(p=>p.id===s.id)){
-        persons.push({id:s.id,name:s.name,position:s.position||'',dept:s.dept,dept_label:s.dept_label,income:s.income||0,base:s.base,adj:s.adj||0,status:s.status,pl_line:s.pl_line,alloc:{...s.alloc},_new:true});
-      }
-    } else {
-      const p=persons.find(x=>x.id===s.id);
-      if(p){p.status=s.status;p.adj=s.adj||0;p.pl_line=s.pl_line;p.alloc={...s.alloc};}
-    }
-  });
-  persons.forEach(p=>{const allZero=BUS.every(b=>!p.alloc[b.key]);if(allZero) applyAutoAlloc(p);});
-}
-buildTable();
-updateStrip();
-const ind=document.getElementById('save-indicator');
-if(hadSaved&&ind){
-  try{const ts=JSON.parse(localStorage.getItem(LS_KEY))?.ts;if(ts){ind.textContent=`Restored ${new Date(ts).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})}`;ind.style.color='var(--teal)';}}catch(e){}
-}
-document.addEventListener('keydown',e=>{if(e.key==='Escape') closeModal();});
-
-// ── IMPORT CSV ──
-function triggerImportCSV(){
-  if(!confirm('Import CSV sẽ cập nhật adj, status, alloc % và P&L line cho từng nhân sự theo ID.\nNhân sự mới (ID không có trong gốc) sẽ được thêm vào.\nTiếp tục?')) return;
-  document.getElementById('csv-file-input').click();
-}
-
-function importCSV(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e){
-    try{
-      const text = e.target.result;
-      const rows = parseCSVText(text);
-      if(rows.length < 2){ alert('File CSV không có data'); return; }
-
-      const headers = rows[0].map(h => h.trim());
-      const BU_ALLOC_KEYS = {
-        'SBH Own Channel % Alloc':  'SBH_own',
-        'SBH Partnership % Alloc':  'SBH_partner',
-        'HLB % Alloc':              'HLB',
-        'BU3 — FinanOne % Alloc':   'BU3',
-        'Corp. Shared Svc % Alloc': 'CSS',
-      };
-
-      const col = name => headers.indexOf(name);
-      const pn  = v => { const s=String(v||'').trim().replace(/,/g,''); return s==='-'||s===''?0:parseFloat(s)||0; };
-
-      let updated=0, added=0, skipped=0;
-
-      rows.slice(1).forEach(row => {
-        if(row.every(c=>!c.trim())) return; // skip blank rows
-        const id  = parseInt(pn(row[col('ID')]));
-        const name = (row[col('Name')]||'').trim();
-        if(!id && !name){ skipped++; return; }
-
-        // alloc
-        const alloc = {};
-        Object.entries(BU_ALLOC_KEYS).forEach(([header, key]) => {
-          const ci = col(header);
-          alloc[key] = ci >= 0 ? pn(row[ci]) : 0;
-        });
-
-        const adj      = Math.round(pn(row[col('Adj (VND)')]) );
-        const status   = (row[col('Status')]||'active').trim();
-        const pl_line  = (row[col('P&L Line')]||'').trim();
-        const dept     = (row[col('Dept')]||'').trim();
-        const position = (row[col('Position')]||'').trim();
-        const base     = Math.round(pn(row[col('Base (VND)')]));
-        const income   = Math.round(pn(row[col('Fixed Income')]));
-
-        // Try match by ID first, then by name+dept
-        let existing = id ? persons.find(p => p.id === id) : null;
-        if(!existing && name) existing = persons.find(p => p.name === name && (!dept || p.dept === dept));
-
-        if(existing){
-          existing.adj      = adj;
-          existing.status   = status || existing.status;
-          existing.pl_line  = pl_line || existing.pl_line;
-          existing.alloc    = {...existing.alloc, ...alloc};
-          updated++;
-        } else if(name && base > 0){
-          // New person not in original dataset
-          persons.push({
-            id: id || Date.now() + added,
-            name, position, dept,
-            dept_label: DEPT_LABELS[dept] || dept,
-            income, base, adj,
-            status: status || 'active',
-            pl_line: pl_line || DEPT_PL[dept] || '7.99 Khác',
-            alloc, _new: true,
-          });
-          added++;
-        } else {
-          skipped++;
-        }
-      });
-
-      buildTable();
-      updateStrip();
-      saveState();
-
-      // Reset file input so same file can be re-imported
-      event.target.value = '';
-
-      alert(`Import hoàn tất:\n✓ Cập nhật: ${updated} nhân sự\n✦ Thêm mới: ${added} nhân sự\n— Bỏ qua: ${skipped} dòng`);
-    } catch(err){
-      console.error('Import error:', err);
-      alert('Lỗi đọc CSV: ' + err.message);
-    }
-  };
-  reader.readAsText(file, 'UTF-8');
-}
-
-function parseCSVText(text){
-  // Strip BOM
-  if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
-  const rows = [];
-  let row = [], cell = '', inQuote = false;
-  for(let i = 0; i < text.length; i++){
-    const ch = text[i], next = text[i+1];
-    if(inQuote){
-      if(ch === '"' && next === '"'){ cell += '"'; i++; }
-      else if(ch === '"'){ inQuote = false; }
-      else { cell += ch; }
-    } else {
-      if(ch === '"'){ inQuote = true; }
-      else if(ch === ','){ row.push(cell); cell = ''; }
-      else if(ch === '\n' || (ch === '\r' && next === '\n')){
-        row.push(cell); rows.push(row);
-        row = []; cell = '';
-        if(ch === '\r') i++;
-      } else { cell += ch; }
-    }
+  /* wind-up coil + gear from stage 7 */
+  if(stage>=7){
+    const cx=88,cy=58;
+    p += `<circle cx="${cx}" cy="${cy}" r="15" fill="none" stroke="${C.gold}" stroke-width="3"/>`;
+    p += `<circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="${C.gold}" stroke-width="2.5"/>`;
+    p += `<circle cx="${cx}" cy="${cy}" r="4" fill="none" stroke="${C.gold}" stroke-width="2"/>`;
+    /* gear */
+    const gx=150,gy=78;
+    p += `<g fill="${C.steel}"><circle cx="${gx}" cy="${gy}" r="12"/><circle cx="${gx}" cy="${gy}" r="4" fill="${C.tire}"/>`;
+    const teeth=[[0,-15],[0,15],[-15,0],[15,0],[-10,-10],[10,10],[-10,10],[10,-10]];
+    teeth.forEach(([dx,dy])=>{p+=`<line x1="${gx+dx*0.73}" y1="${gy+dy*0.73}" x2="${gx+dx}" y2="${gy+dy}" stroke="${C.steel}" stroke-width="4"/>`;});
+    p += `</g>`;
   }
-  if(cell || row.length) { row.push(cell); rows.push(row); }
-  return rows;
+  /* battery box + motor from stage 8 */
+  if(stage>=8){
+    p += `<rect x="108" y="50" width="40" height="22" rx="3" fill="#2C3A47" stroke="${C.green}" stroke-width="2"/>`;
+    p += `<rect x="114" y="55" width="12" height="12" rx="1" fill="${C.green}"/><rect x="130" y="55" width="12" height="12" rx="1" fill="${C.green}"/>`;
+  }
+  /* remote control from stage 9 */
+  if(stage>=9){
+    /* antenna on car */
+    p += `<line x1="170" y1="68" x2="184" y2="40" stroke="${C.steel}" stroke-width="2.5"/><circle cx="184" cy="38" r="4" fill="${C.gold}"/>`;
+    /* remote controller bottom-left */
+    p += `<rect x="14" y="118" width="34" height="26" rx="4" fill="${C.dark}" stroke="${C.steel}" stroke-width="1.5"/>`;
+    p += `<circle cx="23" cy="127" r="4" fill="${C.green}"/><circle cx="39" cy="127" r="4" fill="${C.gold}"/>`;
+    p += `<rect x="20" y="135" width="22" height="4" rx="2" fill="${C.steel}"/>`;
+    /* signal waves */
+    p += `<path d="M52 124 q8 6 0 14" fill="none" stroke="${C.gold}" stroke-width="1.5" opacity=".7"/>`;
+    p += `<path d="M58 120 q14 11 0 22" fill="none" stroke="${C.gold}" stroke-width="1.5" opacity=".4"/>`;
+  }
+  /* wheels last (on top) */
+  p += wheels(big);
+  return `<svg viewBox="0 0 230 158" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Xe Lego giai đoạn ${stage}">${p}</svg>`;
 }
 
+/* ---------- pair data ---------- */
+const PAIRS=[
+ {v:'Bản 0a',t:'Báo cáo map chi phí (tĩnh)',gain:'Map chi phí lương vào đúng dòng tài khoản',mean:'Chưa nhập, chưa tính — chỉ để hiểu cấu trúc. Chưa phải sản phẩm.'},
+ {v:'Bản 0b',t:'Report forecast nhập tay',gain:'Thêm vài ô cho BU lead nhập input',mean:'Gốc rễ nhu cầu planning: nhập input → đẩy tổng vào P&L.'},
+ {v:'Bản 0c',t:'"Planning Simulator" phôi thai',gain:'Có Future Hires + ma trận P&L × BU',mean:'Bắt đầu gọi là "Simulator", nhưng chưa thêm người động.'},
+ {v:'v1',t:'Thành Simulator thật',gain:'Thêm / bớt người động, bật-tắt người nghỉ',mean:'★ Đổi bản chất: từ "báo cáo" thành "công cụ" chạy được.'},
+ {v:'v7',t:'Có bộ nhớ + tổng hợp',gain:'Tab Summary · Cross table · tự lưu',mean:'Mở lại không mất, nhìn được bức tranh tổng.'},
+ {v:'v15',t:'Gửi đi dùng được',gain:'Xuất Excel thật (SheetJS)',mean:'Để gửi cho sếp / team xài ngay, không cần mình.'},
+ {v:'v17',t:'Nhớ trạng thái cũ',gain:'Nạp lại dữ liệu cũ · drill-down',mean:'Mở lại file là có ngay trạng thái lần trước.'},
+ {v:'v19',t:'Chuẩn hoá lõi',gain:'Chuẩn hoá hệ thống tài khoản (master)',mean:'Một nguồn gốc để các tool sau kế thừa.'},
+ {v:'v25',t:'Xuất thẳng lên sổ kế toán',gain:'Bút toán hạch toán · so sánh ngân sách',mean:'★ Đổi bản chất lần hai: từ "tính" sang "xuất sổ kế toán".',peak:true},
+];
+const STAGE_NAME=['Cục gạch + trục + bánh','Thêm mui xe','Tăng kích thước','Trục xe rời','Khoang rỗng','Thêm cánh','Động cơ cót + bánh răng','Động cơ chạy pin','Điều khiển từ xa'];
+
+/* ---------- interactive state ---------- */
+let cur=0; /* index of currently shown pair (0..8) */
+const legoArt=document.getElementById('legoArt');
+const vcard=document.getElementById('vcard');
+const dotsEl=document.getElementById('dots');
+const revealBtn=document.getElementById('revealBtn');
+const stageCount=document.getElementById('stageCount');
+PAIRS.forEach((p,i)=>{const d=document.createElement('div');d.className='dot'+(p.peak?' peak':'');d.onclick=()=>{cur=i;render();};dotsEl.appendChild(d);});
+function render(){
+  const p=PAIRS[cur];
+  legoArt.innerHTML=lego(cur+1);
+  vcard.className='vcard'+(p.peak?' peak':'');
+  vcard.innerHTML=`<div class="stagelabel">Giai đoạn ${cur+1}/9 · Lego: ${STAGE_NAME[cur]}</div>`+
+    `<div class="vtag">${p.v}</div><h3>${p.t}</h3>`+
+    `<div class="gain"><b>+</b> ${p.gain}</div><div class="mean">${p.mean}</div>`+
+    (LINKS[p.v]
+      ? `<a class="demolink" href="${LINKS[p.v]}" target="_blank" rel="noopener">Mở bản demo ${p.v} →</a>`
+      : `<a class="demolink" href="${DEMO_FOLDER}" target="_blank" rel="noopener" title="Folder Google Drive đã share. Tìm file: ${DEMO_FILE_NAMES[p.v]}">Mở folder demo · ${DEMO_FILE_NAMES[p.v]} →</a>`);
+  [...dotsEl.children].forEach((d,i)=>d.classList.toggle('on',i<=cur));
+  stageCount.textContent=`${cur+1} / 9`;
+  if(cur>=PAIRS.length-1){revealBtn.textContent='↺ Ráp lại từ đầu';revealBtn.classList.add('replay');}
+  else{revealBtn.textContent='Ráp giai đoạn tiếp →';revealBtn.classList.remove('replay');}
+}
+revealBtn.onclick=()=>{cur=(cur>=PAIRS.length-1)?0:cur+1;render();};
+render();
+
+/* ---------- deck navigation ---------- */
+const slides=[...document.querySelectorAll('.slide')];
+const tot=slides.length;let i=0;
+const bar=document.getElementById('bar');
+const curEl=document.getElementById('cur');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+document.getElementById('tot').textContent=String(tot).padStart(2,'0');
+function show(n){
+  i=Math.max(0,Math.min(tot-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  curEl.textContent=String(i+1).padStart(2,'0');
+  bar.style.width=((i+1)/tot*100)+'%';
+  prev.disabled=i===0;next.disabled=i===tot-1;
+}
+next.onclick=()=>show(i+1);prev.onclick=()=>show(i-1);
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='BUTTON')return;
+  if(e.key==='ArrowRight')show(i+1);
+  if(e.key==='ArrowLeft')show(i-1);
+});
+show(0);
 </script>
 </body>
 </html>
